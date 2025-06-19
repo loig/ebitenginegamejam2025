@@ -17,4 +17,6 @@
 */
 package main
 
-type game struct{}
+type game struct {
+	playArea playArea
+}

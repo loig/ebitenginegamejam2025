@@ -25,6 +25,7 @@ func main() {
 	//ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	g := &game{}
+	g.playArea = buildPlayArea()
 
 	if err := ebiten.RunGame(g); err != nil {
 		panic(err)

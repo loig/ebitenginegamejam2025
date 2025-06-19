@@ -18,6 +18,22 @@
 package main
 
 const (
+
+	// tiles characteristics
+	globalTileSize = 40
+	// grid characteristics
+	globalGridWidth  = 7
+	globalGridHeight = 9
+	globalGridX      = 20
+	globalGridY      = 20
+	// hand characteristics
+	globalHandSize = 3
+	globalHandX    = globalGridX + globalGridWidth*globalTileSize + 20
+	globalHandY    = globalGridY
+	globalHandSep  = 20
+	// deck characteristics
+	globalDeckSize = globalGridWidth*globalGridHeight - 1
+	// screen size
 	globalWidth  = 800
 	globalHeight = 600
 )

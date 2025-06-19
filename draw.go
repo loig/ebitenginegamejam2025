@@ -17,6 +17,50 @@
 */
 package main
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"image/color"
 
-func (g *game) Draw(screen *ebiten.Image) {}
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
+)
+
+func (g *game) Draw(screen *ebiten.Image) {
+
+	// Draw the grid
+	tileY := globalGridY
+	for y, line := range g.playArea.grid {
+		tileX := globalGridX
+		for x, tile := range line {
+			mouseHover := g.playArea.gridHoverX == x && g.playArea.gridHoverY == y && g.playArea.gridHover
+			cellColor := color.Gray16{32000}
+			if (y%2 == 0 && x%2 == 1) || (y%2 == 1 && x%2 == 0) {
+				cellColor = color.Gray16{16000}
+			}
+			if mouseHover {
+				cellColor = color.White
+			}
+			vector.DrawFilledRect(screen, float32(tileX), float32(tileY), float32(globalTileSize), float32(globalTileSize), cellColor, false)
+			if g.playArea.gridHasTile[y][x] {
+				tile.draw(tileX, tileY, screen)
+			}
+			tileX += globalTileSize
+		}
+		tileY += globalTileSize
+	}
+
+	// Draw the hand
+	tileX, tileY := globalHandX, globalHandY
+	for pos, tile := range g.playArea.hand {
+		//mouseHover := (g.playArea.handHoverPos == pos) && g.playArea.handHover
+		if g.playArea.handHasTile[pos] && !(g.playArea.holdTile && g.playArea.heldHandTile == pos) {
+			tile.draw(tileX, tileY, screen)
+		}
+		tileY += globalTileSize + globalHandSep
+	}
+
+	// Draw the held tile
+	if g.playArea.holdTile {
+		g.playArea.hand[g.playArea.heldHandTile].draw(g.playArea.holdX, g.playArea.holdY, screen)
+	}
+
+}

@@ -17,6 +17,42 @@
 */
 package main
 
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+)
+
 func (g *game) Update() error {
+
+	// find which tile is below the mouse
+	mouseX, mouseY := ebiten.CursorPosition()
+	g.playArea.updateMousePosition(mouseX, mouseY)
+
+	// get tile
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		if !g.playArea.holdTile && g.playArea.handHover && g.playArea.handHasTile[g.playArea.handHoverPos] {
+			g.playArea.holdTile = true
+			g.playArea.heldHandTile = g.playArea.handHoverPos
+		}
+	}
+
+	// define where the held tile shall be drawn
+	g.playArea.holdX = mouseX - globalTileSize/2
+	g.playArea.holdY = mouseY - globalTileSize/2
+	if g.playArea.gridHover && !g.playArea.gridHasTile[g.playArea.gridHoverY][g.playArea.gridHoverX] {
+		g.playArea.holdX = globalGridX + g.playArea.gridHoverX*globalTileSize
+		g.playArea.holdY = globalGridY + g.playArea.gridHoverY*globalTileSize
+	}
+
+	// release tile
+	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+		if g.playArea.canDropTile() {
+			g.playArea.grid[g.playArea.gridHoverY][g.playArea.gridHoverX] = g.playArea.hand[g.playArea.heldHandTile]
+			g.playArea.gridHasTile[g.playArea.gridHoverY][g.playArea.gridHoverX] = true
+			g.playArea.drawNewTile(g.playArea.heldHandTile)
+		}
+		g.playArea.holdTile = false
+	}
+
 	return nil
 }
