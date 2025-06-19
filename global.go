@@ -18,7 +18,6 @@
 package main
 
 const (
-
 	// tiles characteristics
 	globalTileSize = 40
 	// grid characteristics
@@ -33,6 +32,11 @@ const (
 	globalHandSep  = 20
 	// deck characteristics
 	globalDeckSize = globalGridWidth*globalGridHeight - 1
+	// tile set characteristics
+	globalNumCops   = 20
+	globalNumPeople = 80
+	globalNumNature = 20
+	globalNumTiles  = 70
 	// screen size
 	globalWidth  = 800
 	globalHeight = 600

@@ -44,6 +44,13 @@ type playArea struct {
 func buildPlayArea() playArea {
 	var res playArea
 	res.gridHasTile[globalGridHeight/2][globalGridWidth/2] = true
+	res.grid[globalGridHeight/2][globalGridWidth/2] = tile{
+		east:  contentPeople,
+		north: contentPeople,
+		south: contentPeople,
+		west:  contentPeople,
+	}
+	res.deck = getDeck()
 	for pos := 0; pos < globalHandSize; pos++ {
 		res.drawNewTile(pos)
 	}
@@ -91,7 +98,51 @@ type tile struct {
 }
 
 func (t tile) draw(tileX, tileY int, screen *ebiten.Image) {
-	vector.DrawFilledRect(screen, float32(tileX), float32(tileY), float32(globalTileSize), float32(globalTileSize), color.RGBA{R: 150, G: 0, B: 0, A: 255}, false)
+	//vector.DrawFilledRect(screen, float32(tileX), float32(tileY), float32(globalTileSize), float32(globalTileSize), color.RGBA{R: 150, G: 0, B: 0, A: 255}, false)
+
+	contentColors := map[tileContent]color.Color{
+		contentCity:   color.RGBA{R: 240, G: 230, B: 140, A: 255},
+		contentCop:    color.RGBA{R: 65, G: 105, B: 225, A: 255},
+		contentNature: color.RGBA{R: 167, G: 214, B: 125, A: 255},
+		contentPeople: color.RGBA{R: 252, G: 142, B: 172, A: 255},
+	}
+
+	// east
+	vector.DrawFilledRect(screen, float32(tileX+5*globalTileSize/8), float32(tileY+3*globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.east], false)
+	// north
+	vector.DrawFilledRect(screen, float32(tileX+3*globalTileSize/8), float32(tileY+globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.north], false)
+	// south
+	vector.DrawFilledRect(screen, float32(tileX+3*globalTileSize/8), float32(tileY+5*globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.south], false)
+	// west
+	vector.DrawFilledRect(screen, float32(tileX+globalTileSize/8), float32(tileY+3*globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.west], false)
+}
+
+// find the content of a side of a tile from an integer (must correspond to setContentAtSide)
+func (t tile) getContentAtSide(side int) tileContent {
+	switch side {
+	case 0:
+		return t.north
+	case 1:
+		return t.east
+	case 2:
+		return t.south
+	default:
+		return t.west
+	}
+}
+
+// set the content of a side of a tile from an integer (must correspond to getContentAtSide)
+func (t *tile) setContentAtSide(side int, content tileContent) {
+	switch side {
+	case 0:
+		t.north = content
+	case 1:
+		t.east = content
+	case 2:
+		t.south = content
+	default:
+		t.west = content
+	}
 }
 
 type tileContent = int
