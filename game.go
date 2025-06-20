@@ -18,5 +18,7 @@
 package main
 
 type game struct {
-	playArea playArea
+	playArea    playArea
+	score       score
+	timeHandler timeHandler
 }

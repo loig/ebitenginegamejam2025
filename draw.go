@@ -63,4 +63,10 @@ func (g *game) Draw(screen *ebiten.Image) {
 		g.playArea.hand[g.playArea.heldHandTile].draw(g.playArea.holdX, g.playArea.holdY, screen)
 	}
 
+	// Draw the score
+	g.score.draw(screen)
+
+	// Draw the time
+	g.timeHandler.draw(screen)
+
 }

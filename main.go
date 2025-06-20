@@ -26,6 +26,8 @@ func main() {
 
 	g := &game{}
 	g.playArea = buildPlayArea()
+	g.score.reset()
+	g.timeHandler.reset()
 
 	if err := ebiten.RunGame(g); err != nil {
 		panic(err)

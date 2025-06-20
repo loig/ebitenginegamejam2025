@@ -19,10 +19,10 @@ package main
 
 const (
 	// tiles characteristics
-	globalTileSize = 40
+	globalTileSize = 80
 	// grid characteristics
-	globalGridWidth           = 7
-	globalGridHeight          = 9
+	globalGridWidth           = 5 //7
+	globalGridHeight          = 5 //9
 	globalGridX               = 20
 	globalGridY               = 20
 	globalDemonstrationStartX = globalGridWidth / 2
@@ -39,6 +39,15 @@ const (
 	globalNumPeople = 80
 	globalNumNature = 20
 	globalNumTiles  = 70
+	// score characteristics
+	globalScoreX = globalGridX
+	globalScoreY = globalGridY + globalGridHeight*globalTileSize + 40 + globalTimeHeight
+	// time characteristics
+	globalAllowedTime = 180
+	globalTimeX       = globalGridX
+	globalTimeY       = globalGridY + globalGridHeight*globalTileSize + 20
+	globalTimeHeight  = 40
+	globalTimeWidth   = globalGridWidth * globalTileSize
 	// screen size
 	globalWidth  = 800
 	globalHeight = 600

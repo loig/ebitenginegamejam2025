@@ -38,6 +38,8 @@ type playArea struct {
 	holdX, holdY           int
 	deck                   [globalDeckSize]tile
 	deckPos                int
+	demonstrationSize      int
+	maxCopsSize            int
 }
 
 // build a fresh area
@@ -161,6 +163,8 @@ func (p *playArea) updateDemonstration() {
 		p.grid[position.tileY][position.tileX].content[position.contentNumber] = contentDemonstration
 		p.grid[position.tileY][position.tileX].contentGroupSize[position.contentNumber] = demonstrationSize
 	}
+
+	p.demonstrationSize = demonstrationSize
 }
 
 // count the size of a type of content
@@ -189,6 +193,10 @@ func (p *playArea) updateContentFromPosition(position contentPosition) {
 	areaSize := len(seen)
 	for position := range seen {
 		p.grid[position.tileY][position.tileX].contentGroupSize[position.contentNumber] = areaSize
+	}
+
+	if content == contentCop && areaSize > p.maxCopsSize {
+		p.maxCopsSize = areaSize
 	}
 }
 

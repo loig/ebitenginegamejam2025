@@ -48,10 +48,15 @@ func (g *game) Update() error {
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
 		if g.playArea.canDropTile() {
 			g.playArea.dropTile()
+			g.score.update(getTimePoints(g.timeHandler.currentTime), getDemonstrationPoints(g.playArea.demonstrationSize), getCopsPoints(g.playArea.maxCopsSize))
 			g.playArea.drawNewTile(g.playArea.heldHandTile)
+			g.timeHandler.reset()
 		}
 		g.playArea.holdTile = false
 	}
+
+	// update time
+	g.timeHandler.update()
 
 	return nil
 }
