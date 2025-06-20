@@ -112,6 +112,14 @@ func (p *playArea) dropTile() {
 	if demonstrationUpdateNeeded {
 		p.updateDemonstration()
 	}
+
+	// update the other contents
+	for contentNumber := 0; contentNumber < 4; contentNumber++ {
+		if p.grid[p.gridHoverY][p.gridHoverX].content[contentNumber] != contentDemonstration {
+			position := contentPosition{tileX: p.gridHoverX, tileY: p.gridHoverY, contentNumber: contentNumber}
+			p.updateContentFromPosition(position)
+		}
+	}
 }
 
 // find which tile contents are part of the demonstration (and update its size)
@@ -152,6 +160,35 @@ func (p *playArea) updateDemonstration() {
 	for position := range seen {
 		p.grid[position.tileY][position.tileX].content[position.contentNumber] = contentDemonstration
 		p.grid[position.tileY][position.tileX].contentGroupSize[position.contentNumber] = demonstrationSize
+	}
+}
+
+// count the size of a type of content
+func (p *playArea) updateContentFromPosition(position contentPosition) {
+
+	content := p.grid[position.tileY][position.tileX].content[position.contentNumber]
+
+	nexts := []contentPosition{position}
+	seen := map[contentPosition]bool{position: true}
+
+	for len(nexts) > 0 {
+		current := nexts[0]
+		nexts = nexts[1:]
+
+		neighbors := current.getNeighbors()
+		for _, n := range neighbors {
+			if !seen[n] && p.gridHasTile[n.tileY][n.tileX] {
+				if p.grid[n.tileY][n.tileX].content[n.contentNumber] == content {
+					nexts = append(nexts, n)
+					seen[n] = true
+				}
+			}
+		}
+	}
+
+	areaSize := len(seen)
+	for position := range seen {
+		p.grid[position.tileY][position.tileX].contentGroupSize[position.contentNumber] = areaSize
 	}
 }
 
