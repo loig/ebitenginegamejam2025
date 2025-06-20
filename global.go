@@ -21,10 +21,12 @@ const (
 	// tiles characteristics
 	globalTileSize = 40
 	// grid characteristics
-	globalGridWidth  = 7
-	globalGridHeight = 9
-	globalGridX      = 20
-	globalGridY      = 20
+	globalGridWidth           = 7
+	globalGridHeight          = 9
+	globalGridX               = 20
+	globalGridY               = 20
+	globalDemonstrationStartX = globalGridWidth / 2
+	globalDemonstrationStartY = globalGridHeight / 2
 	// hand characteristics
 	globalHandSize = 3
 	globalHandX    = globalGridX + globalGridWidth*globalTileSize + 20

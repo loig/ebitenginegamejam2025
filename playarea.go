@@ -43,12 +43,10 @@ type playArea struct {
 // build a fresh area
 func buildPlayArea() playArea {
 	var res playArea
-	res.gridHasTile[globalGridHeight/2][globalGridWidth/2] = true
-	res.grid[globalGridHeight/2][globalGridWidth/2] = tile{
-		east:  contentPeople,
-		north: contentPeople,
-		south: contentPeople,
-		west:  contentPeople,
+	res.gridHasTile[globalDemonstrationStartY][globalDemonstrationStartX] = true
+	res.grid[globalDemonstrationStartY][globalDemonstrationStartX] = tile{
+		content:          [4]tileContent{contentDemonstration, contentDemonstration, contentDemonstration, contentDemonstration},
+		contentGroupSize: [4]int{4, 4, 4, 4},
 	}
 	res.deck = getDeck()
 	for pos := 0; pos < globalHandSize; pos++ {
@@ -73,7 +71,8 @@ func (p *playArea) updateMousePosition(mouseX, mouseY int) {
 
 // check if a tile can be dropped at current mouse position
 func (p playArea) canDropTile() bool {
-	return p.gridHover && !p.gridHasTile[p.gridHoverY][p.gridHoverX] &&
+	return p.holdTile &&
+		p.gridHover && !p.gridHasTile[p.gridHoverY][p.gridHoverX] &&
 		((p.gridHoverX-1 >= 0 && p.gridHasTile[p.gridHoverY][p.gridHoverX-1]) ||
 			(p.gridHoverX+1 < globalGridWidth && p.gridHasTile[p.gridHoverY][p.gridHoverX+1]) ||
 			(p.gridHoverY-1 >= 0 && p.gridHasTile[p.gridHoverY-1][p.gridHoverX]) ||
@@ -90,58 +89,172 @@ func (p *playArea) drawNewTile(handPos int) {
 	p.handHasTile[handPos] = false
 }
 
+// drop a tile at the current mouse position
+func (p *playArea) dropTile() {
+	p.grid[p.gridHoverY][p.gridHoverX] = p.hand[p.heldHandTile]
+	p.gridHasTile[p.gridHoverY][p.gridHoverX] = true
+
+	// update the demonstration if needed
+	demonstrationUpdateNeeded := false
+	for contentNumber := 0; contentNumber < 4 && !demonstrationUpdateNeeded; contentNumber++ {
+		position := contentPosition{tileX: p.gridHoverX, tileY: p.gridHoverY, contentNumber: contentNumber}
+		neighbors := position.getNeighbors()
+		for _, n := range neighbors {
+			if p.gridHasTile[n.tileY][n.tileX] {
+				if p.grid[n.tileY][n.tileX].content[n.contentNumber] == contentDemonstration {
+					demonstrationUpdateNeeded = true
+					break
+				}
+			}
+		}
+	}
+
+	if demonstrationUpdateNeeded {
+		p.updateDemonstration()
+	}
+}
+
+// find which tile contents are part of the demonstration (and update its size)
+// this is basically a search from the initial position of the demonstration
+func (p *playArea) updateDemonstration() {
+
+	nexts := []contentPosition{
+		contentPosition{tileX: globalDemonstrationStartX, tileY: globalDemonstrationStartY, contentNumber: 0},
+		contentPosition{tileX: globalDemonstrationStartX, tileY: globalDemonstrationStartY, contentNumber: 1},
+		contentPosition{tileX: globalDemonstrationStartX, tileY: globalDemonstrationStartY, contentNumber: 2},
+		contentPosition{tileX: globalDemonstrationStartX, tileY: globalDemonstrationStartY, contentNumber: 3},
+	}
+
+	seen := map[contentPosition]bool{
+		contentPosition{tileX: globalDemonstrationStartX, tileY: globalDemonstrationStartY, contentNumber: 0}: true,
+		contentPosition{tileX: globalDemonstrationStartX, tileY: globalDemonstrationStartY, contentNumber: 1}: true,
+		contentPosition{tileX: globalDemonstrationStartX, tileY: globalDemonstrationStartY, contentNumber: 2}: true,
+		contentPosition{tileX: globalDemonstrationStartX, tileY: globalDemonstrationStartY, contentNumber: 3}: true,
+	}
+
+	for len(nexts) > 0 {
+		current := nexts[0]
+		nexts = nexts[1:]
+
+		neighbors := current.getNeighbors()
+		for _, n := range neighbors {
+			if !seen[n] && p.gridHasTile[n.tileY][n.tileX] {
+				if p.grid[n.tileY][n.tileX].content[n.contentNumber] == contentDemonstration ||
+					p.grid[n.tileY][n.tileX].content[n.contentNumber] == contentPeople {
+					nexts = append(nexts, n)
+					seen[n] = true
+				}
+			}
+		}
+	}
+
+	demonstrationSize := len(seen)
+	for position := range seen {
+		p.grid[position.tileY][position.tileX].content[position.contentNumber] = contentDemonstration
+		p.grid[position.tileY][position.tileX].contentGroupSize[position.contentNumber] = demonstrationSize
+	}
+}
+
+/*
+Content layout :
+0 1
+3 2
+*/
 type tile struct {
-	east  tileContent
-	north tileContent
-	south tileContent
-	west  tileContent
+	content          [4]tileContent
+	contentGroupSize [4]int
+}
+
+type contentPosition struct {
+	tileX, tileY  int
+	contentNumber int
+}
+
+// find the neighbors of a contentPosition (a tile + the position in the layout of the tile)
+func (c contentPosition) getNeighbors() []contentPosition {
+	res := make([]contentPosition, 0)
+
+	existsLeft := c.tileX-1 >= 0
+	existsAbove := c.tileY-1 >= 0
+	existsRight := c.tileX+1 < globalGridWidth
+	existsBelow := c.tileY+1 < globalGridHeight
+
+	switch c.contentNumber {
+	case 0:
+		res = append(res, contentPosition{tileX: c.tileX, tileY: c.tileY, contentNumber: 3})
+		res = append(res, contentPosition{tileX: c.tileX, tileY: c.tileY, contentNumber: 1})
+		if existsLeft {
+			res = append(res, contentPosition{tileX: c.tileX - 1, tileY: c.tileY, contentNumber: 1})
+		}
+		if existsAbove {
+			res = append(res, contentPosition{tileX: c.tileX, tileY: c.tileY - 1, contentNumber: 3})
+		}
+	case 1:
+		res = append(res, contentPosition{tileX: c.tileX, tileY: c.tileY, contentNumber: 2})
+		res = append(res, contentPosition{tileX: c.tileX, tileY: c.tileY, contentNumber: 0})
+		if existsRight {
+			res = append(res, contentPosition{tileX: c.tileX + 1, tileY: c.tileY, contentNumber: 0})
+		}
+		if existsAbove {
+			res = append(res, contentPosition{tileX: c.tileX, tileY: c.tileY - 1, contentNumber: 2})
+		}
+	case 2:
+		res = append(res, contentPosition{tileX: c.tileX, tileY: c.tileY, contentNumber: 1})
+		res = append(res, contentPosition{tileX: c.tileX, tileY: c.tileY, contentNumber: 3})
+		if existsRight {
+			res = append(res, contentPosition{tileX: c.tileX + 1, tileY: c.tileY, contentNumber: 3})
+		}
+		if existsBelow {
+			res = append(res, contentPosition{tileX: c.tileX, tileY: c.tileY + 1, contentNumber: 1})
+		}
+	case 3:
+		res = append(res, contentPosition{tileX: c.tileX, tileY: c.tileY, contentNumber: 0})
+		res = append(res, contentPosition{tileX: c.tileX, tileY: c.tileY, contentNumber: 2})
+		if existsLeft {
+			res = append(res, contentPosition{tileX: c.tileX - 1, tileY: c.tileY, contentNumber: 2})
+		}
+		if existsBelow {
+			res = append(res, contentPosition{tileX: c.tileX, tileY: c.tileY + 1, contentNumber: 0})
+		}
+	}
+
+	return res
 }
 
 func (t tile) draw(tileX, tileY int, screen *ebiten.Image) {
 	//vector.DrawFilledRect(screen, float32(tileX), float32(tileY), float32(globalTileSize), float32(globalTileSize), color.RGBA{R: 150, G: 0, B: 0, A: 255}, false)
 
 	contentColors := map[tileContent]color.Color{
-		contentCity:   color.RGBA{R: 240, G: 230, B: 140, A: 255},
-		contentCop:    color.RGBA{R: 65, G: 105, B: 225, A: 255},
-		contentNature: color.RGBA{R: 167, G: 214, B: 125, A: 255},
-		contentPeople: color.RGBA{R: 252, G: 142, B: 172, A: 255},
+		contentCity:          color.RGBA{R: 240, G: 230, B: 140, A: 255},
+		contentCop:           color.RGBA{R: 65, G: 105, B: 225, A: 255},
+		contentNature:        color.RGBA{R: 167, G: 214, B: 125, A: 255},
+		contentPeople:        color.RGBA{R: 252, G: 142, B: 172, A: 255},
+		contentDemonstration: color.RGBA{R: 255, G: 196, B: 12, A: 255},
 	}
 
-	// east
-	vector.DrawFilledRect(screen, float32(tileX+5*globalTileSize/8), float32(tileY+3*globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.east], false)
-	// north
-	vector.DrawFilledRect(screen, float32(tileX+3*globalTileSize/8), float32(tileY+globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.north], false)
-	// south
-	vector.DrawFilledRect(screen, float32(tileX+3*globalTileSize/8), float32(tileY+5*globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.south], false)
-	// west
-	vector.DrawFilledRect(screen, float32(tileX+globalTileSize/8), float32(tileY+3*globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.west], false)
-}
-
-// find the content of a side of a tile from an integer (must correspond to setContentAtSide)
-func (t tile) getContentAtSide(side int) tileContent {
-	switch side {
-	case 0:
-		return t.north
-	case 1:
-		return t.east
-	case 2:
-		return t.south
-	default:
-		return t.west
+	// top left
+	if t.contentGroupSize[0] > 1 {
+		vector.DrawFilledRect(screen, float32(tileX), float32(tileY), float32(globalTileSize/2), float32(globalTileSize/2), contentColors[t.content[0]], false)
+	} else {
+		vector.DrawFilledRect(screen, float32(tileX+globalTileSize/8), float32(tileY+globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.content[0]], false)
 	}
-}
-
-// set the content of a side of a tile from an integer (must correspond to getContentAtSide)
-func (t *tile) setContentAtSide(side int, content tileContent) {
-	switch side {
-	case 0:
-		t.north = content
-	case 1:
-		t.east = content
-	case 2:
-		t.south = content
-	default:
-		t.west = content
+	// top right
+	if t.contentGroupSize[1] > 1 {
+		vector.DrawFilledRect(screen, float32(tileX+globalTileSize/2), float32(tileY), float32(globalTileSize/2), float32(globalTileSize/2), contentColors[t.content[1]], false)
+	} else {
+		vector.DrawFilledRect(screen, float32(tileX+5*globalTileSize/8), float32(tileY+globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.content[1]], false)
+	}
+	// bottom right
+	if t.contentGroupSize[2] > 1 {
+		vector.DrawFilledRect(screen, float32(tileX+globalTileSize/2), float32(tileY+globalTileSize/2), float32(globalTileSize/2), float32(globalTileSize/2), contentColors[t.content[2]], false)
+	} else {
+		vector.DrawFilledRect(screen, float32(tileX+5*globalTileSize/8), float32(tileY+5*globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.content[2]], false)
+	}
+	// bottom left
+	if t.contentGroupSize[3] > 1 {
+		vector.DrawFilledRect(screen, float32(tileX), float32(tileY+globalTileSize/2), float32(globalTileSize/2), float32(globalTileSize/2), contentColors[t.content[3]], false)
+	} else {
+		vector.DrawFilledRect(screen, float32(tileX+globalTileSize/8), float32(tileY+5*globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.content[3]], false)
 	}
 }
 
@@ -152,4 +265,5 @@ const (
 	contentCop
 	contentNature
 	contentPeople
+	contentDemonstration
 )

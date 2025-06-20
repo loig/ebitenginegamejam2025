@@ -25,7 +25,7 @@ func genTileSet() (tileSet [globalNumTiles]tile) {
 		tilePosition := rand.Intn(globalNumTiles)
 		tileSide := rand.Intn(4)
 
-		for tileSet[tilePosition].getContentAtSide(tileSide) != contentCity {
+		for tileSet[tilePosition].content[tileSide] != contentCity {
 			tileSide++
 			if tileSide >= 4 {
 				tileSide = 0
@@ -33,7 +33,7 @@ func genTileSet() (tileSet [globalNumTiles]tile) {
 			}
 		}
 
-		tileSet[tilePosition].setContentAtSide(tileSide, contentCop)
+		tileSet[tilePosition].content[tileSide] = contentCop
 	}
 
 	// add people
@@ -41,7 +41,7 @@ func genTileSet() (tileSet [globalNumTiles]tile) {
 		tilePosition := rand.Intn(globalNumTiles)
 		tileSide := rand.Intn(4)
 
-		for tileSet[tilePosition].getContentAtSide(tileSide) != contentCity {
+		for tileSet[tilePosition].content[tileSide] != contentCity {
 			tileSide++
 			if tileSide >= 4 {
 				tileSide = 0
@@ -49,7 +49,7 @@ func genTileSet() (tileSet [globalNumTiles]tile) {
 			}
 		}
 
-		tileSet[tilePosition].setContentAtSide(tileSide, contentPeople)
+		tileSet[tilePosition].content[tileSide] = contentPeople
 	}
 
 	// add nature
@@ -57,7 +57,7 @@ func genTileSet() (tileSet [globalNumTiles]tile) {
 		tilePosition := rand.Intn(globalNumTiles)
 		tileSide := rand.Intn(4)
 
-		for tileSet[tilePosition].getContentAtSide(tileSide) != contentCity {
+		for tileSet[tilePosition].content[tileSide] != contentCity {
 			tileSide++
 			if tileSide >= 4 {
 				tileSide = 0
@@ -65,7 +65,7 @@ func genTileSet() (tileSet [globalNumTiles]tile) {
 			}
 		}
 
-		tileSet[tilePosition].setContentAtSide(tileSide, contentNature)
+		tileSet[tilePosition].content[tileSide] = contentNature
 	}
 
 	return

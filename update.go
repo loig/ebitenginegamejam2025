@@ -47,8 +47,7 @@ func (g *game) Update() error {
 	// release tile
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
 		if g.playArea.canDropTile() {
-			g.playArea.grid[g.playArea.gridHoverY][g.playArea.gridHoverX] = g.playArea.hand[g.playArea.heldHandTile]
-			g.playArea.gridHasTile[g.playArea.gridHoverY][g.playArea.gridHoverX] = true
+			g.playArea.dropTile()
 			g.playArea.drawNewTile(g.playArea.heldHandTile)
 		}
 		g.playArea.holdTile = false
