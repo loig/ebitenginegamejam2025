@@ -26,7 +26,7 @@ func main() {
 	//ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	g := &game{}
-	g.state = stateIntro
+	g.state = stateLanguageSelect
 
 	if err := ebiten.RunGame(g); err != nil {
 		panic(err)

@@ -24,9 +24,16 @@ import (
 
 func (g *game) Update() error {
 
+	mouseX, mouseY := ebiten.CursorPosition()
+
 	switch g.state {
+	case stateLanguageSelect:
+		if languageSelectUpdate(mouseX) {
+			g.state = stateIntro
+			g.intro.reset()
+		}
 	case stateIntro:
-		if inputSelect() {
+		if g.intro.update() {
 			g.state = stateTitle
 		}
 	case stateTitle:
@@ -37,7 +44,7 @@ func (g *game) Update() error {
 			g.timeHandler.reset()
 		}
 	case statePlay:
-		if g.updatePlay() {
+		if g.updatePlay(mouseX, mouseY) {
 			g.state = stateEnd
 		}
 	case stateEnd:
@@ -55,9 +62,8 @@ func inputSelect() bool {
 		inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft)
 }
 
-func (g *game) updatePlay() (finished bool) {
+func (g *game) updatePlay(mouseX, mouseY int) (finished bool) {
 	// find which tile is below the mouse
-	mouseX, mouseY := ebiten.CursorPosition()
 	g.playArea.updateMousePosition(mouseX, mouseY)
 
 	// get tile

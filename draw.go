@@ -27,7 +27,10 @@ import (
 func (g *game) Draw(screen *ebiten.Image) {
 
 	switch g.state {
+	case stateLanguageSelect:
+		languageSelectDraw(screen)
 	case stateIntro:
+		g.intro.draw(screen)
 	case stateTitle:
 	case statePlay:
 		g.drawPlay(screen)

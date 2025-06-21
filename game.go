@@ -22,12 +22,14 @@ type game struct {
 	playArea    playArea
 	score       score
 	timeHandler timeHandler
+	intro       intro
 }
 
 type gameState = int
 
 const (
-	stateIntro int = iota
+	stateLanguageSelect int = iota
+	stateIntro
 	stateTitle
 	statePlay
 	stateEnd
