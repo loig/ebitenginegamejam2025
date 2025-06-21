@@ -39,12 +39,17 @@ func (g *game) Update() error {
 			g.state = stateTitle
 		}
 	case stateTitle:
-		if inputSelect() {
-			g.state = statePlay
+		g.updateTitle(mouseX, mouseY)
+		if g.state == statePlay {
 			g.playArea = buildPlayArea()
 			g.score.reset()
 			g.timeHandler.reset()
 			g.newAchievementPositions = nil
+		}
+	case stateCredits, stateHowTo, stateAchievements:
+		if inputSelect() {
+			g.state = stateTitle
+			resetTitle()
 		}
 	case statePlay:
 		if g.updatePlay(mouseX, mouseY) {
@@ -56,6 +61,7 @@ func (g *game) Update() error {
 		g.updateEnd()
 		if inputSelect() {
 			g.state = stateTitle
+			resetTitle()
 		}
 	}
 

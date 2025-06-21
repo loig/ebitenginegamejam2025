@@ -40,8 +40,8 @@ const (
 	globalNumNature = 0
 	globalNumTiles  = 70
 	// score characteristics
-	globalScoreX = globalGridX
-	globalScoreY = globalGridY + globalGridHeight*globalTileSize + 40 + globalTimeHeight
+	globalPlayScoreX = globalGridX
+	globalPlayScoreY = globalGridY + globalGridHeight*globalTileSize + 40 + globalTimeHeight
 	// time characteristics
 	globalAllowedTime = 180
 	globalTimeX       = globalGridX
@@ -54,6 +54,9 @@ const (
 	globalLiveDisplayAchievementsY    = globalHeight - 20
 	globalLiveDisplayAchievementsSize = 20
 	globalLiveDisplayAchievementsSep  = 10
+	// title screen characteristics
+	globalTitleMaxScoreX = 20
+	globalTitleMaxScoreY = globalHeight - 20
 	// end screen characteristics
 	globalEndDisplayAchievementTime = 120
 	globalEndDisplayAchievementX    = globalWidth/2 - 100
@@ -64,5 +67,5 @@ const (
 	globalEndMaxScoreY              = 60
 	// screen size
 	globalWidth  = globalHandX + globalTileSize + 20
-	globalHeight = globalScoreY + 30
+	globalHeight = globalPlayScoreY + 30
 )

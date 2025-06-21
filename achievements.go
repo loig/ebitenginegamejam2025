@@ -23,13 +23,14 @@ import (
 )
 
 type achievement struct {
-	obtained    bool
-	displayed   bool
-	displayTime int
-	condition   func(playArea) bool
-	frenchText  string
-	englishText string
-	number      int
+	obtained         bool
+	displayed        bool
+	displayTime      int
+	condition        func(playArea) bool
+	frenchText       string
+	englishText      string
+	number           int
+	screenX, screenY int
 }
 
 type achievementSet = []achievement
@@ -43,7 +44,8 @@ func makeAchievementSet() achievementSet {
 			condition: func(p playArea) bool {
 				return p.maxCopsSize >= 2
 			},
-			number: 1,
+			number:  1,
+			screenX: 20, screenY: 20,
 		},
 		achievement{
 			frenchText:  "Un début de mobilisation",
@@ -51,7 +53,8 @@ func makeAchievementSet() achievementSet {
 			condition: func(p playArea) bool {
 				return p.demonstrationSize > 4
 			},
-			number: 2,
+			number:  2,
+			screenX: 20, screenY: 40,
 		},
 	}
 }
@@ -93,4 +96,20 @@ func (g game) liveDisplayDrawAchievements(screen *ebiten.Image) {
 			achievementY -= globalLiveDisplayAchievementsSize + globalLiveDisplayAchievementsSep
 		}
 	}
+}
+
+// display achievements screen
+func (g game) drawAchievementsScreen(screen *ebiten.Image) {
+
+	for _, achievement := range g.achievements {
+		text := achievement.frenchText
+		if language == englishLanguage {
+			text = achievement.englishText
+		}
+		if achievement.obtained {
+			text += " (Ok)"
+		}
+		ebitenutil.DebugPrintAt(screen, text, achievement.screenX, achievement.screenY)
+	}
+
 }

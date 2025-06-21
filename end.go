@@ -18,7 +18,6 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -46,12 +45,10 @@ func (g *game) updateEnd() {
 func (g game) drawEnd(screen *ebiten.Image) {
 
 	// display score
-	scoreText := fmt.Sprintf("Score: %d", g.score.current)
-	ebitenutil.DebugPrintAt(screen, scoreText, globalEndScoreX, globalEndScoreY)
+	g.score.drawCurrentAt(screen, globalEndScoreX, globalEndScoreY)
 
 	// display max score
-	maxScoreText := fmt.Sprintf("Max: %d", g.score.max)
-	ebitenutil.DebugPrintAt(screen, maxScoreText, globalEndMaxScoreX, globalEndMaxScoreY)
+	g.score.drawMaxAt(screen, globalEndMaxScoreX, globalEndMaxScoreY)
 
 	// display the new achievements
 	if len(g.newAchievementPositions) > 0 {

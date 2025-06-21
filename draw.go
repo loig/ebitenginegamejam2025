@@ -21,6 +21,7 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
@@ -34,6 +35,21 @@ func (g *game) Draw(screen *ebiten.Image) {
 	case stateIntro:
 		g.intro.draw(screen)
 	case stateTitle:
+		g.drawTitle(screen)
+	case stateCredits:
+		if language == frenchLanguage {
+			ebitenutil.DebugPrint(screen, "Crédits")
+		} else {
+			ebitenutil.DebugPrint(screen, "Credits")
+		}
+	case stateHowTo:
+		if language == frenchLanguage {
+			ebitenutil.DebugPrint(screen, "Comment jouer")
+		} else {
+			ebitenutil.DebugPrint(screen, "How to play")
+		}
+	case stateAchievements:
+		g.drawAchievementsScreen(screen)
 	case statePlay:
 		g.drawPlay(screen)
 	case stateEnd:
@@ -81,7 +97,7 @@ func (g game) drawPlay(screen *ebiten.Image) {
 	}
 
 	// Draw the score
-	g.score.draw(screen)
+	g.score.drawCurrentAt(screen, globalPlayScoreX, globalPlayScoreY)
 
 	// Draw the time
 	g.timeHandler.draw(screen)

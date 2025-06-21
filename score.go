@@ -70,9 +70,14 @@ func (s *score) setMax() {
 }
 
 // draw the score
-func (s score) draw(screen *ebiten.Image) {
+func (s score) drawCurrentAt(screen *ebiten.Image, scoreX, scoreY int) {
 	theScore := fmt.Sprintf("Score: %d", s.current)
-	ebitenutil.DebugPrintAt(screen, theScore, globalScoreX, globalScoreY)
+	ebitenutil.DebugPrintAt(screen, theScore, scoreX, scoreY)
+}
+
+func (s score) drawMaxAt(screen *ebiten.Image, scoreX, scoreY int) {
+	theScore := fmt.Sprintf("Max: %d", s.max)
+	ebitenutil.DebugPrintAt(screen, theScore, scoreX, scoreY)
 }
 
 // get demonstration points from the size of the demonstration

@@ -27,6 +27,7 @@ type game struct {
 	newAchievementPositions []int
 	endFrames               int
 	endAchievementPosition  int
+	titleChoice             gameState
 }
 
 type gameState = int
@@ -35,6 +36,9 @@ const (
 	stateLanguageSelect int = iota
 	stateIntro
 	stateTitle
+	stateAchievements
+	stateCredits
+	stateHowTo
 	statePlay
 	stateEnd
 )

@@ -49,3 +49,12 @@ func languageSelectDraw(screen *ebiten.Image) {
 	}
 
 }
+
+func toggleLanguage() {
+	switch language {
+	case frenchLanguage:
+		language = englishLanguage
+	case englishLanguage:
+		language = frenchLanguage
+	}
+}
