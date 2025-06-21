@@ -27,34 +27,46 @@ import (
 type score struct {
 	fromDemonstration int
 	fromCops          int
+	fromTime          int
 	current           int
 	max               int
 }
 
 // update the current score according to the effects of the last tile placed
 func (s *score) update(timePoints, demonstrationPoints, copsPoints int) (demonstrationsIncrement, copsDecrement int) {
-	s.current += timePoints
+	s.fromTime += timePoints
+
 	demonstrationsIncrement = demonstrationPoints - s.fromDemonstration
-	if demonstrationsIncrement > 0 {
-		s.current += demonstrationsIncrement
-	}
-	s.fromDemonstration = demonstrationPoints
 	copsDecrement = copsPoints - s.fromCops
-	if copsDecrement > 0 {
-		s.current -= copsDecrement
-	}
+
+	s.fromDemonstration = demonstrationPoints
 	s.fromCops = copsPoints
+
+	oldScore := s.current
+	s.current = s.fromTime + s.fromDemonstration - s.fromCops
+	if s.current < 0 {
+		s.current = 0
+		if oldScore == 0 {
+			return 0, 0
+		}
+	}
+
 	return
 }
 
-// reset the score at the end of a game
+// reset the score at the start of a game
 func (s *score) reset() {
+	s.fromDemonstration = 0
+	s.fromCops = 0
+	s.fromTime = 0
+	s.current = 0
+}
+
+// update the max score at the end of a game
+func (s *score) setMax() {
 	if s.current > s.max {
 		s.max = s.current
 	}
-	s.fromDemonstration = 0
-	s.fromCops = 0
-	s.current = 0
 }
 
 // draw the score

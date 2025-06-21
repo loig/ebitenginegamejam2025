@@ -26,6 +26,8 @@ func (g *game) Update() error {
 
 	mouseX, mouseY := ebiten.CursorPosition()
 
+	g.liveDisplayUpdateAchievements()
+
 	switch g.state {
 	case stateLanguageSelect:
 		if languageSelectUpdate(mouseX) {
@@ -42,12 +44,16 @@ func (g *game) Update() error {
 			g.playArea = buildPlayArea()
 			g.score.reset()
 			g.timeHandler.reset()
+			g.newAchievementPositions = nil
 		}
 	case statePlay:
 		if g.updatePlay(mouseX, mouseY) {
 			g.state = stateEnd
+			g.score.setMax()
+			g.setupEnd()
 		}
 	case stateEnd:
+		g.updateEnd()
 		if inputSelect() {
 			g.state = stateTitle
 		}
@@ -87,6 +93,7 @@ func (g *game) updatePlay(mouseX, mouseY int) (finished bool) {
 		if g.playArea.canDropTile() {
 			g.playArea.dropTile()
 			g.score.update(getTimePoints(g.timeHandler.currentTime), getDemonstrationPoints(g.playArea.demonstrationSize), getCopsPoints(g.playArea.maxCopsSize))
+			g.checkAchievements()
 			g.playArea.drawNewTile(g.playArea.heldHandTile)
 			g.timeHandler.reset()
 		}

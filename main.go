@@ -27,6 +27,7 @@ func main() {
 
 	g := &game{}
 	g.state = stateLanguageSelect
+	g.achievements = makeAchievementSet()
 
 	if err := ebiten.RunGame(g); err != nil {
 		panic(err)

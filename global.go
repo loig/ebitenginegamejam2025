@@ -35,9 +35,9 @@ const (
 	// deck characteristics
 	globalDeckSize = globalGridWidth*globalGridHeight - 1
 	// tile set characteristics
-	globalNumCops   = 20
+	globalNumCops   = 50
 	globalNumPeople = 80
-	globalNumNature = 20
+	globalNumNature = 0
 	globalNumTiles  = 70
 	// score characteristics
 	globalScoreX = globalGridX
@@ -48,6 +48,20 @@ const (
 	globalTimeY       = globalGridY + globalGridHeight*globalTileSize + 20
 	globalTimeHeight  = 40
 	globalTimeWidth   = globalGridWidth * globalTileSize
+	// achievements characteristics
+	globalLiveDisplayTimeAchievement  = 120
+	globalLiveDisplayAchievementsX    = globalHandX
+	globalLiveDisplayAchievementsY    = globalHeight - 20
+	globalLiveDisplayAchievementsSize = 20
+	globalLiveDisplayAchievementsSep  = 10
+	// end screen characteristics
+	globalEndDisplayAchievementTime = 120
+	globalEndDisplayAchievementX    = globalWidth/2 - 100
+	globalEndDisplayAchievementY    = globalHeight / 2
+	globalEndScoreX                 = globalWidth/2 - 100
+	globalEndScoreY                 = 40
+	globalEndMaxScoreX              = globalWidth/2 - 100
+	globalEndMaxScoreY              = 60
 	// screen size
 	globalWidth  = globalHandX + globalTileSize + 20
 	globalHeight = globalScoreY + 30

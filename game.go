@@ -18,11 +18,15 @@
 package main
 
 type game struct {
-	state       gameState
-	playArea    playArea
-	score       score
-	timeHandler timeHandler
-	intro       intro
+	state                   gameState
+	playArea                playArea
+	score                   score
+	timeHandler             timeHandler
+	intro                   intro
+	achievements            achievementSet
+	newAchievementPositions []int
+	endFrames               int
+	endAchievementPosition  int
 }
 
 type gameState = int
