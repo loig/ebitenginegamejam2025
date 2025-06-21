@@ -22,12 +22,11 @@ import "github.com/hajimehoshi/ebiten/v2"
 func main() {
 
 	ebiten.SetWindowTitle("Union (working title)")
+	ebiten.SetWindowSize(globalWidth, globalHeight)
 	//ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	g := &game{}
-	g.playArea = buildPlayArea()
-	g.score.reset()
-	g.timeHandler.reset()
+	g.state = stateIntro
 
 	if err := ebiten.RunGame(g); err != nil {
 		panic(err)

@@ -21,8 +21,8 @@ const (
 	// tiles characteristics
 	globalTileSize = 80
 	// grid characteristics
-	globalGridWidth           = 5 //7
-	globalGridHeight          = 5 //9
+	globalGridWidth           = 3 //7
+	globalGridHeight          = 3 //9
 	globalGridX               = 20
 	globalGridY               = 20
 	globalDemonstrationStartX = globalGridWidth / 2
@@ -49,6 +49,6 @@ const (
 	globalTimeHeight  = 40
 	globalTimeWidth   = globalGridWidth * globalTileSize
 	// screen size
-	globalWidth  = 800
-	globalHeight = 600
+	globalWidth  = globalHandX + globalTileSize + 20
+	globalHeight = globalScoreY + 30
 )

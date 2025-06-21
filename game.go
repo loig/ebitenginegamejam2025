@@ -18,7 +18,17 @@
 package main
 
 type game struct {
+	state       gameState
 	playArea    playArea
 	score       score
 	timeHandler timeHandler
 }
+
+type gameState = int
+
+const (
+	stateIntro int = iota
+	stateTitle
+	statePlay
+	stateEnd
+)

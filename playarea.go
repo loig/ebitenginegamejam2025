@@ -40,6 +40,7 @@ type playArea struct {
 	deckPos                int
 	demonstrationSize      int
 	maxCopsSize            int
+	placedTiles            int
 }
 
 // build a fresh area
@@ -54,6 +55,7 @@ func buildPlayArea() playArea {
 	for pos := 0; pos < globalHandSize; pos++ {
 		res.drawNewTile(pos)
 	}
+	res.placedTiles = 1
 	return res
 }
 
@@ -95,6 +97,7 @@ func (p *playArea) drawNewTile(handPos int) {
 func (p *playArea) dropTile() {
 	p.grid[p.gridHoverY][p.gridHoverX] = p.hand[p.heldHandTile]
 	p.gridHasTile[p.gridHoverY][p.gridHoverX] = true
+	p.placedTiles++
 
 	// update the demonstration if needed
 	demonstrationUpdateNeeded := false
@@ -198,6 +201,15 @@ func (p *playArea) updateContentFromPosition(position contentPosition) {
 	if content == contentCop && areaSize > p.maxCopsSize {
 		p.maxCopsSize = areaSize
 	}
+}
+
+// check if the game is finished
+func (p playArea) checkEndOfPlay() bool {
+	handEmpty := !p.holdTile
+	for pos := 0; pos < globalHandSize; pos++ {
+		handEmpty = handEmpty && !p.handHasTile[pos]
+	}
+	return handEmpty || p.placedTiles >= globalGridWidth*globalGridHeight
 }
 
 /*

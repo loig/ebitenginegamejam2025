@@ -24,6 +24,38 @@ import (
 
 func (g *game) Update() error {
 
+	switch g.state {
+	case stateIntro:
+		if inputSelect() {
+			g.state = stateTitle
+		}
+	case stateTitle:
+		if inputSelect() {
+			g.state = statePlay
+			g.playArea = buildPlayArea()
+			g.score.reset()
+			g.timeHandler.reset()
+		}
+	case statePlay:
+		if g.updatePlay() {
+			g.state = stateEnd
+		}
+	case stateEnd:
+		if inputSelect() {
+			g.state = stateTitle
+		}
+	}
+
+	return nil
+}
+
+// Define the keys for choice validation
+func inputSelect() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeyEnter) ||
+		inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft)
+}
+
+func (g *game) updatePlay() (finished bool) {
 	// find which tile is below the mouse
 	mouseX, mouseY := ebiten.CursorPosition()
 	g.playArea.updateMousePosition(mouseX, mouseY)
@@ -58,5 +90,7 @@ func (g *game) Update() error {
 	// update time
 	g.timeHandler.update()
 
-	return nil
+	// check end of game
+	finished = g.playArea.checkEndOfPlay()
+	return
 }

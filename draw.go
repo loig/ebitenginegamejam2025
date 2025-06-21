@@ -26,6 +26,17 @@ import (
 
 func (g *game) Draw(screen *ebiten.Image) {
 
+	switch g.state {
+	case stateIntro:
+	case stateTitle:
+	case statePlay:
+		g.drawPlay(screen)
+	case stateEnd:
+	}
+
+}
+
+func (g game) drawPlay(screen *ebiten.Image) {
 	// Draw the grid
 	tileY := globalGridY
 	for y, line := range g.playArea.grid {
@@ -68,5 +79,4 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 	// Draw the time
 	g.timeHandler.draw(screen)
-
 }
