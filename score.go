@@ -47,7 +47,7 @@ func (s *score) update(timePoints, demonstrationPoints, copsPoints int) (demonst
 	if s.current < 0 {
 		s.current = 0
 		if oldScore == 0 {
-			return 0, 0
+			return 0, copsDecrement
 		}
 	}
 
