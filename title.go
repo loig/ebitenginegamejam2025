@@ -66,6 +66,12 @@ var titleButtons []titleButton = []titleButton{
 		englishContent: "Français",
 		effect:         func(g *game) { toggleLanguage() },
 	},
+	titleButton{
+		x: 20, y: 220, width: 100, height: 20,
+		frenchContent:  "Revoir l'intro",
+		englishContent: "See the introduction again",
+		effect:         func(g *game) { g.state = stateIntro },
+	},
 }
 
 // reset the title screen

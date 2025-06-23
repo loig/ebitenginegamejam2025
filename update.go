@@ -28,23 +28,32 @@ func (g *game) Update() error {
 
 	g.liveDisplayUpdateAchievements()
 
+	g.SoundManager.UpdateMusic(0.5)
+
 	switch g.state {
 	case stateLanguageSelect:
 		if languageSelectUpdate(mouseX) {
 			g.state = stateIntro
+			g.SoundManager.ChangeMusic(introMusicTrack)
 			g.intro.reset()
 		}
 	case stateIntro:
 		if g.intro.update() {
 			g.state = stateTitle
+			g.SoundManager.ChangeMusic(titleMusicTrack)
 		}
 	case stateTitle:
 		g.updateTitle(mouseX, mouseY)
 		if g.state == statePlay {
+			g.SoundManager.ChangeMusic(themeMusicTrack)
 			g.playArea = buildPlayArea()
 			g.score.reset()
 			g.timeHandler.reset()
 			g.newAchievementPositions = nil
+		}
+		if g.state == stateIntro {
+			g.SoundManager.ChangeMusic(introMusicTrack)
+			g.intro.reset()
 		}
 	case stateCredits, stateHowTo, stateAchievements:
 		if inputSelect() {
@@ -54,6 +63,7 @@ func (g *game) Update() error {
 	case statePlay:
 		if g.updatePlay(mouseX, mouseY) {
 			g.state = stateEnd
+			g.SoundManager.ChangeMusic(titleMusicTrack)
 			g.score.setMax()
 			g.setupEnd()
 		}

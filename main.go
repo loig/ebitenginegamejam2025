@@ -28,6 +28,7 @@ func main() {
 	g := &game{}
 	g.state = stateLanguageSelect
 	g.achievements = makeAchievementSet()
+	g.SoundManager = InitAudio()
 
 	if err := ebiten.RunGame(g); err != nil {
 		panic(err)

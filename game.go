@@ -28,6 +28,7 @@ type game struct {
 	endFrames               int
 	endAchievementPosition  int
 	titleChoice             gameState
+	SoundManager            SoundManager
 }
 
 type gameState = int
