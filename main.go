@@ -28,6 +28,7 @@ func main() {
 	//ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	loadGraphics()
+	loadFonts()
 
 	g := &game{}
 	g.state = stateLanguageSelect

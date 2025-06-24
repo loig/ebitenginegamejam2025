@@ -65,6 +65,10 @@ const (
 	globalEndScoreY                 = 40
 	globalEndMaxScoreX              = globalWidth/2 - 100
 	globalEndMaxScoreY              = 60
+	// intro characteristics
+	globalIntroY    = 100.0
+	globalIntroSep  = 50.0
+	globalIntroTime = 300
 	// screen size
 	globalWidth  = 800
 	globalHeight = 800
