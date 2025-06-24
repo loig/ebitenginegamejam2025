@@ -69,6 +69,9 @@ const (
 	globalIntroY    = 100.0
 	globalIntroSep  = 50.0
 	globalIntroTime = 300
+	// language selection characteristics
+	globalFlagWidth  = 99
+	globalFlagHeight = 80
 	// screen size
 	globalWidth  = 800
 	globalHeight = 800

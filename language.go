@@ -18,8 +18,9 @@
 package main
 
 import (
+	"image"
+
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 var language int = frenchLanguage
@@ -41,12 +42,29 @@ func languageSelectUpdate(mouseX int) (finished bool) {
 
 func languageSelectDraw(screen *ebiten.Image) {
 
-	switch language {
-	case frenchLanguage:
-		ebitenutil.DebugPrint(screen, "Français")
-	case englishLanguage:
-		ebitenutil.DebugPrint(screen, "English")
+	drawTextCenteredAt("Choisis ta langue/Choose your language", float64(globalWidth/2), 100, screen)
+
+	flagX := globalWidth/4 - globalFlagWidth/2
+	flagY := (globalHeight - globalFlagHeight) / 2
+	opt := &ebiten.DrawImageOptions{}
+	if language != frenchLanguage {
+		opt.GeoM.Scale(0.5, 0.5)
+		flagX = globalWidth/4 - globalFlagWidth/4
+		flagY = globalHeight/2 - globalFlagHeight/4
 	}
+	opt.GeoM.Translate(float64(flagX), float64(flagY))
+	screen.DrawImage(flagsImage.SubImage(image.Rect(0, 0, globalFlagWidth, globalFlagHeight)).(*ebiten.Image), opt)
+
+	flagX = 3*globalWidth/4 - globalFlagWidth/2
+	flagY = (globalHeight - globalFlagHeight) / 2
+	opt = &ebiten.DrawImageOptions{}
+	if language != englishLanguage {
+		opt.GeoM.Scale(0.5, 0.5)
+		flagX = 3*globalWidth/4 - globalFlagWidth/4
+		flagY = globalHeight/2 - globalFlagHeight/4
+	}
+	opt.GeoM.Translate(float64(flagX), float64(flagY))
+	screen.DrawImage(flagsImage.SubImage(image.Rect(globalFlagWidth, 0, 2*globalFlagWidth, globalFlagHeight)).(*ebiten.Image), opt)
 
 }
 
