@@ -18,10 +18,10 @@
 package main
 
 import (
-	"image/color"
+	"image"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 type playArea struct {
@@ -40,6 +40,7 @@ type playArea struct {
 	deckPos                int
 	demonstrationSize      int
 	maxCopsSize            int
+	maxCopsPosition        contentPosition
 	placedTiles            int
 }
 
@@ -50,6 +51,7 @@ func buildPlayArea() playArea {
 	res.grid[globalDemonstrationStartY][globalDemonstrationStartX] = tile{
 		content:          [4]tileContent{contentDemonstration, contentDemonstration, contentDemonstration, contentDemonstration},
 		contentGroupSize: [4]int{4, 4, 4, 4},
+		neighboring:      [4]int{6, 12, 9, 3},
 	}
 	res.deck = getDeck()
 	for pos := 0; pos < globalHandSize; pos++ {
@@ -118,6 +120,8 @@ func (p *playArea) dropTile() {
 		p.updateDemonstration()
 	}
 
+	maxCopsPosition := p.maxCopsPosition
+
 	// update the other contents
 	for contentNumber := 0; contentNumber < 4; contentNumber++ {
 		if p.grid[p.gridHoverY][p.gridHoverX].content[contentNumber] != contentDemonstration {
@@ -125,6 +129,291 @@ func (p *playArea) dropTile() {
 			p.updateContentFromPosition(position)
 		}
 	}
+
+	// update the maxCops area
+	if maxCopsPosition != p.maxCopsPosition {
+		p.setAreaContent(maxCopsPosition, contentCop)
+		p.setAreaContent(p.maxCopsPosition, contentManyCops)
+	}
+
+	// update the info on neighboring
+	for contentNumber := 0; contentNumber < 4; contentNumber++ {
+		position := contentPosition{tileX: p.gridHoverX, tileY: p.gridHoverY, contentNumber: contentNumber}
+		p.updateNeighborsFromPosition(position)
+	}
+
+	// update the info on corners
+	position := getAboveLeftPosition(contentPosition{tileX: p.gridHoverX, tileY: p.gridHoverY, contentNumber: 0})
+	for line := 0; line < 4; line++ {
+		currentPosition := position
+		for cell := 0; cell < 4; cell++ {
+			p.updateCorners(currentPosition)
+			currentPosition = getRightPosition(currentPosition)
+		}
+		position = getBelowPosition(position)
+	}
+
+}
+
+// check if a tile exists
+func (p playArea) existsTile(position contentPosition) bool {
+	return position.tileX >= 0 && position.tileX < globalGridWidth &&
+		position.tileY >= 0 && position.tileY < globalGridHeight &&
+		p.gridHasTile[position.tileY][position.tileX]
+}
+
+// get the content of a part of a tile
+// the tile must exist
+func (p playArea) getTileContent(position contentPosition) tileContent {
+	return p.grid[position.tileY][position.tileX].content[position.contentNumber]
+}
+
+// check if D C B is an L shape of similar content
+// A B
+// D C
+// C must exist
+func (p playArea) isCorner(positionA, positionB, positionC, positionD contentPosition) bool {
+	contentC := p.getTileContent(positionC)
+	return p.existsTile(positionD) && p.getTileContent(positionD) == contentC &&
+		p.existsTile(positionB) && p.getTileContent(positionB) == contentC &&
+		(!p.existsTile(positionA) || p.getTileContent(positionA) != contentC)
+}
+
+// get positions relative to a given position
+func getLeftPosition(position contentPosition) (res contentPosition) {
+
+	res = position
+
+	switch position.contentNumber {
+	case 0:
+		res.tileX--
+		res.contentNumber = 1
+	case 1:
+		res.contentNumber = 0
+	case 2:
+		res.contentNumber = 3
+	case 3:
+		res.tileX--
+		res.contentNumber = 2
+	}
+
+	return
+}
+
+func getRightPosition(position contentPosition) (res contentPosition) {
+
+	res = position
+
+	switch position.contentNumber {
+	case 0:
+		res.contentNumber = 1
+	case 1:
+		res.tileX++
+		res.contentNumber = 0
+	case 2:
+		res.tileX++
+		res.contentNumber = 3
+	case 3:
+		res.contentNumber = 2
+	}
+
+	return
+}
+
+func getAbovePosition(position contentPosition) (res contentPosition) {
+
+	res = position
+
+	switch position.contentNumber {
+	case 0:
+		res.tileY--
+		res.contentNumber = 3
+	case 1:
+		res.tileY--
+		res.contentNumber = 2
+	case 2:
+		res.contentNumber = 1
+	case 3:
+		res.contentNumber = 0
+	}
+
+	return
+}
+
+func getBelowPosition(position contentPosition) (res contentPosition) {
+
+	res = position
+
+	switch position.contentNumber {
+	case 0:
+		res.contentNumber = 3
+	case 1:
+		res.contentNumber = 2
+	case 2:
+		res.tileY++
+		res.contentNumber = 1
+	case 3:
+		res.tileY++
+		res.contentNumber = 0
+	}
+
+	return
+}
+
+func getAboveLeftPosition(position contentPosition) (res contentPosition) {
+
+	res = position
+
+	switch position.contentNumber {
+	case 0:
+		res.tileX--
+		res.tileY--
+		res.contentNumber = 2
+	case 1:
+		res.tileY--
+		res.contentNumber = 3
+	case 2:
+		res.contentNumber = 0
+	case 3:
+		res.tileX--
+		res.contentNumber = 1
+	}
+
+	return
+}
+
+func getAboveRightPosition(position contentPosition) (res contentPosition) {
+
+	res = position
+
+	switch position.contentNumber {
+	case 0:
+		res.tileY--
+		res.contentNumber = 2
+	case 1:
+		res.tileY--
+		res.tileX++
+		res.contentNumber = 3
+	case 2:
+		res.tileX++
+		res.contentNumber = 0
+	case 3:
+		res.contentNumber = 1
+	}
+
+	return
+}
+
+func getBelowRightPosition(position contentPosition) (res contentPosition) {
+
+	res = position
+
+	switch position.contentNumber {
+	case 0:
+		res.contentNumber = 2
+	case 1:
+		res.tileX++
+		res.contentNumber = 3
+	case 2:
+		res.tileX++
+		res.tileY++
+		res.contentNumber = 0
+	case 3:
+		res.tileY++
+		res.contentNumber = 1
+	}
+
+	return
+}
+
+func getBelowLeftPosition(position contentPosition) (res contentPosition) {
+
+	res = position
+
+	switch position.contentNumber {
+	case 0:
+		res.tileX--
+		res.contentNumber = 2
+	case 1:
+		res.contentNumber = 3
+	case 2:
+		res.tileY++
+		res.contentNumber = 0
+	case 3:
+		res.tileX--
+		res.tileY++
+		res.contentNumber = 1
+	}
+
+	return
+}
+
+// update corners info at a given position for drawing
+func (p *playArea) updateCorners(position contentPosition) {
+	if p.existsTile(position) {
+		p.grid[position.tileY][position.tileX].corners[position.contentNumber][0] = p.isCorner(
+			getAboveLeftPosition(position), getAbovePosition(position), position, getLeftPosition(position))
+		p.grid[position.tileY][position.tileX].corners[position.contentNumber][1] = p.isCorner(
+			getAboveRightPosition(position), getRightPosition(position), position, getAbovePosition(position))
+		p.grid[position.tileY][position.tileX].corners[position.contentNumber][2] = p.isCorner(
+			getBelowRightPosition(position), getBelowPosition(position), position, getRightPosition(position))
+		p.grid[position.tileY][position.tileX].corners[position.contentNumber][3] = p.isCorner(
+			getBelowLeftPosition(position), getLeftPosition(position), position, getBelowPosition(position))
+	}
+
+	//log.Print("Updated corners of ", position, " the result is ", p.grid[position.tileY][position.tileX].corners[position.contentNumber])
+}
+
+// update neighboring values for drawing
+func (p *playArea) updateNeighborsFromPosition(position contentPosition) {
+	neighbors := position.getNeighbors()
+	for _, neighbor := range neighbors {
+		if p.grid[position.tileY][position.tileX].content[position.contentNumber] == p.grid[neighbor.tileY][neighbor.tileX].content[neighbor.contentNumber] {
+			p.grid[neighbor.tileY][neighbor.tileX].neighboring[neighbor.contentNumber] += neighborIncrement(position, neighbor)
+			if position.tileX != neighbor.tileX || position.tileY != neighbor.tileY {
+				p.grid[position.tileY][position.tileX].neighboring[position.contentNumber] += neighborIncrement(neighbor, position)
+			}
+		}
+	}
+}
+
+// get the value that a neighbor brings to the neighboring of a contentPosition for drawing
+func neighborIncrement(newNeighbor, position contentPosition) int {
+
+	aboveIncrement := 1
+	rightIncrement := 2
+	belowIncrement := 4
+	leftIncrement := 8
+
+	if newNeighbor.tileX == position.tileX && newNeighbor.tileY == position.tileY {
+		switch {
+		case (newNeighbor.contentNumber == 0 && position.contentNumber == 1) ||
+			(newNeighbor.contentNumber == 3 && position.contentNumber == 2):
+			return leftIncrement
+		case (newNeighbor.contentNumber == 1 && position.contentNumber == 0) ||
+			(newNeighbor.contentNumber == 2 && position.contentNumber == 3):
+			return rightIncrement
+		case (newNeighbor.contentNumber == 0 && position.contentNumber == 3) ||
+			(newNeighbor.contentNumber == 1 && position.contentNumber == 2):
+			return aboveIncrement
+		case (newNeighbor.contentNumber == 3 && position.contentNumber == 0) ||
+			(newNeighbor.contentNumber == 2 && position.contentNumber == 1):
+			return belowIncrement
+		}
+	}
+
+	switch {
+	case newNeighbor.tileX < position.tileX:
+		return leftIncrement
+	case newNeighbor.tileX > position.tileX:
+		return rightIncrement
+	case newNeighbor.tileY < position.tileY:
+		return aboveIncrement
+	case newNeighbor.tileY > position.tileY:
+		return belowIncrement
+	}
+
+	return 0
 }
 
 // find which tile contents are part of the demonstration (and update its size)
@@ -170,6 +459,13 @@ func (p *playArea) updateDemonstration() {
 	p.demonstrationSize = demonstrationSize
 }
 
+// check if two contents are similar for the sake of are size
+func areSimiliarContents(contentA, contentB tileContent) bool {
+	return contentA == contentB ||
+		(contentA == contentCop && contentB == contentManyCops) ||
+		(contentA == contentManyCops && contentB == contentCop)
+}
+
 // count the size of a type of content
 func (p *playArea) updateContentFromPosition(position contentPosition) {
 
@@ -185,7 +481,7 @@ func (p *playArea) updateContentFromPosition(position contentPosition) {
 		neighbors := current.getNeighbors()
 		for _, n := range neighbors {
 			if !seen[n] && p.gridHasTile[n.tileY][n.tileX] {
-				if p.grid[n.tileY][n.tileX].content[n.contentNumber] == content {
+				if areSimiliarContents(p.grid[n.tileY][n.tileX].content[n.contentNumber], content) {
 					nexts = append(nexts, n)
 					seen[n] = true
 				}
@@ -200,6 +496,35 @@ func (p *playArea) updateContentFromPosition(position contentPosition) {
 
 	if content == contentCop && areaSize > p.maxCopsSize {
 		p.maxCopsSize = areaSize
+		p.maxCopsPosition = position
+	}
+}
+
+// count the size of a type of content
+func (p *playArea) setAreaContent(position contentPosition, newContent tileContent) {
+
+	content := p.grid[position.tileY][position.tileX].content[position.contentNumber]
+
+	nexts := []contentPosition{position}
+	seen := map[contentPosition]bool{position: true}
+
+	for len(nexts) > 0 {
+		current := nexts[0]
+		nexts = nexts[1:]
+
+		neighbors := current.getNeighbors()
+		for _, n := range neighbors {
+			if !seen[n] && p.gridHasTile[n.tileY][n.tileX] {
+				if areSimiliarContents(p.grid[n.tileY][n.tileX].content[n.contentNumber], content) {
+					nexts = append(nexts, n)
+					seen[n] = true
+				}
+			}
+		}
+	}
+
+	for position := range seen {
+		p.grid[position.tileY][position.tileX].content[position.contentNumber] = newContent
 	}
 }
 
@@ -216,10 +541,13 @@ func (p playArea) checkEndOfPlay() bool {
 Content layout :
 0 1
 3 2
+Same for layout for the corners of a content
 */
 type tile struct {
 	content          [4]tileContent
 	contentGroupSize [4]int
+	neighboring      [4]int
+	corners          [4][4]bool
 }
 
 type contentPosition struct {
@@ -279,39 +607,76 @@ func (c contentPosition) getNeighbors() []contentPosition {
 }
 
 func (t tile) draw(tileX, tileY int, screen *ebiten.Image) {
-	//vector.DrawFilledRect(screen, float32(tileX), float32(tileY), float32(globalTileSize), float32(globalTileSize), color.RGBA{R: 150, G: 0, B: 0, A: 255}, false)
 
-	contentColors := map[tileContent]color.Color{
-		contentCity:          color.RGBA{R: 240, G: 230, B: 140, A: 255},
-		contentCop:           color.RGBA{R: 65, G: 105, B: 225, A: 255},
-		contentNature:        color.RGBA{R: 167, G: 214, B: 125, A: 255},
-		contentPeople:        color.RGBA{R: 252, G: 142, B: 172, A: 255},
-		contentDemonstration: color.RGBA{R: 255, G: 196, B: 12, A: 255},
+	opt := &ebiten.DrawImageOptions{}
+	opt.GeoM.Translate(float64(tileX), float64(tileY))
+	screen.DrawImage(tileImage, opt)
+
+	contentImages := map[tileContent]*ebiten.Image{
+		contentCop:           copsbackImage,
+		contentPeople:        peoplebackImage,
+		contentDemonstration: protestbackImage,
+		contentManyCops:      manycopsbackImage,
 	}
 
 	// top left
-	if t.contentGroupSize[0] > 1 {
-		vector.DrawFilledRect(screen, float32(tileX), float32(tileY), float32(globalTileSize/2), float32(globalTileSize/2), contentColors[t.content[0]], false)
-	} else {
-		vector.DrawFilledRect(screen, float32(tileX+globalTileSize/8), float32(tileY+globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.content[0]], false)
+	x, y := tileX+2, tileY+2
+	if theImage, exists := contentImages[t.content[0]]; exists {
+		opt := &ebiten.DrawImageOptions{}
+		opt.GeoM.Translate(float64(x), float64(y))
+		imageX := t.neighboring[0] * globalTileSize / 2
+		screen.DrawImage(theImage.SubImage(image.Rect(imageX, 0, imageX+globalTileSize/2, globalTileSize/2)).(*ebiten.Image), opt)
+		drawCorners(t.corners[0], x, y, screen, theImage)
 	}
+
 	// top right
-	if t.contentGroupSize[1] > 1 {
-		vector.DrawFilledRect(screen, float32(tileX+globalTileSize/2), float32(tileY), float32(globalTileSize/2), float32(globalTileSize/2), contentColors[t.content[1]], false)
-	} else {
-		vector.DrawFilledRect(screen, float32(tileX+5*globalTileSize/8), float32(tileY+globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.content[1]], false)
+	x += globalTileSize/2 - 4
+	if theImage, exists := contentImages[t.content[1]]; exists {
+		opt := &ebiten.DrawImageOptions{}
+		opt.GeoM.Translate(float64(x), float64(y))
+		imageX := t.neighboring[1] * globalTileSize / 2
+		screen.DrawImage(theImage.SubImage(image.Rect(imageX, 0, imageX+globalTileSize/2, globalTileSize/2)).(*ebiten.Image), opt)
+		drawCorners(t.corners[1], x, y, screen, theImage)
 	}
+
 	// bottom right
-	if t.contentGroupSize[2] > 1 {
-		vector.DrawFilledRect(screen, float32(tileX+globalTileSize/2), float32(tileY+globalTileSize/2), float32(globalTileSize/2), float32(globalTileSize/2), contentColors[t.content[2]], false)
-	} else {
-		vector.DrawFilledRect(screen, float32(tileX+5*globalTileSize/8), float32(tileY+5*globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.content[2]], false)
+	y += globalTileSize/2 - 4
+	if theImage, exists := contentImages[t.content[2]]; exists {
+		opt := &ebiten.DrawImageOptions{}
+		opt.GeoM.Translate(float64(x), float64(y))
+		imageX := t.neighboring[2] * globalTileSize / 2
+		screen.DrawImage(theImage.SubImage(image.Rect(imageX, 0, imageX+globalTileSize/2, globalTileSize/2)).(*ebiten.Image), opt)
+		drawCorners(t.corners[2], x, y, screen, theImage)
 	}
+
 	// bottom left
-	if t.contentGroupSize[3] > 1 {
-		vector.DrawFilledRect(screen, float32(tileX), float32(tileY+globalTileSize/2), float32(globalTileSize/2), float32(globalTileSize/2), contentColors[t.content[3]], false)
-	} else {
-		vector.DrawFilledRect(screen, float32(tileX+globalTileSize/8), float32(tileY+5*globalTileSize/8), float32(globalTileSize/4), float32(globalTileSize/4), contentColors[t.content[3]], false)
+	x -= globalTileSize/2 - 4
+	if theImage, exists := contentImages[t.content[3]]; exists {
+		opt := &ebiten.DrawImageOptions{}
+		opt.GeoM.Translate(float64(x), float64(y))
+		imageX := t.neighboring[3] * globalTileSize / 2
+		screen.DrawImage(theImage.SubImage(image.Rect(imageX, 0, imageX+globalTileSize/2, globalTileSize/2)).(*ebiten.Image), opt)
+		drawCorners(t.corners[3], x, y, screen, theImage)
+	}
+}
+
+// draw the corners of a tile content if needed
+func drawCorners(corners [4]bool, x, y int, screen *ebiten.Image, theImage *ebiten.Image) {
+	for numCorner, isCorner := range corners {
+		if isCorner {
+			xShift, yShift := 0, 0
+			if numCorner == 1 || numCorner == 2 {
+				xShift = globalTileSize / 2
+			}
+			if numCorner == 2 || numCorner == 3 {
+				yShift = globalTileSize / 2
+			}
+
+			opt := &ebiten.DrawImageOptions{}
+			opt.GeoM.Rotate((float64(numCorner) * math.Pi / 2))
+			opt.GeoM.Translate(float64(x+xShift), float64(y+yShift))
+			screen.DrawImage(theImage.SubImage(image.Rect(16*globalTileSize/2, 0, 17*globalTileSize/2, globalTileSize/2)).(*ebiten.Image), opt)
+		}
 	}
 }
 
@@ -323,4 +688,5 @@ const (
 	contentNature
 	contentPeople
 	contentDemonstration
+	contentManyCops
 )

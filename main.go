@@ -17,13 +17,17 @@
 */
 package main
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 func main() {
 
 	ebiten.SetWindowTitle("Union (working title)")
 	ebiten.SetWindowSize(globalWidth, globalHeight)
 	//ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+
+	loadGraphics()
 
 	g := &game{}
 	g.state = stateLanguageSelect

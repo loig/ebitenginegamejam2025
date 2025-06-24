@@ -21,17 +21,17 @@ const (
 	// tiles characteristics
 	globalTileSize = 80
 	// grid characteristics
-	globalGridWidth           = 3 //7
-	globalGridHeight          = 3 //9
-	globalGridX               = 20
-	globalGridY               = 20
+	globalGridWidth           = 7 //7
+	globalGridHeight          = 7 //9
+	globalGridX               = 40
+	globalGridY               = 100
 	globalDemonstrationStartX = globalGridWidth / 2
 	globalDemonstrationStartY = globalGridHeight / 2
 	// hand characteristics
 	globalHandSize = 3
-	globalHandX    = globalGridX + globalGridWidth*globalTileSize + 20
-	globalHandY    = globalGridY
-	globalHandSep  = 20
+	globalHandX    = globalGridX + globalGridWidth*globalTileSize + 80
+	globalHandY    = 180
+	globalHandSep  = 80
 	// deck characteristics
 	globalDeckSize = globalGridWidth*globalGridHeight - 1
 	// tile set characteristics
@@ -66,6 +66,6 @@ const (
 	globalEndMaxScoreX              = globalWidth/2 - 100
 	globalEndMaxScoreY              = 60
 	// screen size
-	globalWidth  = globalHandX + globalTileSize + 20
-	globalHeight = globalPlayScoreY + 30
+	globalWidth  = 800
+	globalHeight = 800
 )
