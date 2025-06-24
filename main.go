@@ -24,11 +24,13 @@ import (
 func main() {
 
 	ebiten.SetWindowTitle("Union (working title)")
-	ebiten.SetWindowSize(globalWidth, globalHeight)
+	//ebiten.SetWindowSize(globalWidth, globalHeight)
+	ebiten.SetWindowSize(600, 600)
 	//ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	loadGraphics()
 	loadFonts()
+	loadTitleButtons()
 
 	g := &game{}
 	g.state = stateLanguageSelect

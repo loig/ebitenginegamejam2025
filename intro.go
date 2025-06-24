@@ -31,14 +31,14 @@ var frenchIntroContent []string = []string{
 	"2087, tous les syndicats sans exceptions\narrivent enfin à s'unir derrière un but commun :\nla fin du capitalisme.",
 	"Affaiblis par leurs prises de positions\ntrop timorées depuis de nombreuses années\nil ne leur sera pas facile de réunir assez\nde citoyens derrières eux pour atteindre\nl'objectif qu'ils se sont fixé.",
 	"Le jour de la grande manifestation unitaire est arrivé !\n D'ici quelques heures tous les malheurs du monde\nne seront peut-être plus qu'un lointain souvenir.",
-	"Clique pour jouer !",
+	"Clique pour commencer !",
 }
 
 var englishIntroContent []string = []string{
 	"2087, all the workers unions around the world\nare finally united towards one goal.\nThey will end capitalism.",
 	"However, they are weakened by years and years of\ntimid fights. They may not be able to unit sufficiently\nmany citizens for the accomplishment of their goal.",
 	"Today is the day: the biggest demonstration ever may happen.\nIn a few hours the world may become a better place.",
-	"Clic to play!",
+	"Clic to start!",
 }
 
 // set up the intro
