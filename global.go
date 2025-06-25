@@ -72,6 +72,10 @@ const (
 	// language selection characteristics
 	globalFlagWidth  = 99
 	globalFlagHeight = 80
+	// people characteristics
+	globalNumPeopleGraphics    = 15
+	globalPeopleGraphicsWidth  = 16
+	globalPeopleGraphicsHeight = 32
 	// screen size
 	globalWidth  = 800
 	globalHeight = 800

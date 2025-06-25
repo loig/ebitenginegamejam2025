@@ -18,6 +18,8 @@
 package main
 
 import (
+	"image"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -38,7 +40,7 @@ var englishIntroContent []string = []string{
 	"2087, all the workers unions around the world\nare finally united towards one goal.\nThey will end capitalism.",
 	"However, they are weakened by years and years of\ntimid fights. They may not be able to unit sufficiently\nmany citizens for the accomplishment of their goal.",
 	"Today is the day: the biggest demonstration ever may happen.\nIn a few hours the world may become a better place.",
-	"Clic to start!",
+	"Click to start!",
 }
 
 // set up the intro
@@ -66,11 +68,28 @@ func (i *intro) update() (finished bool) {
 		i.frame = 0
 	}
 
-	return i.position >= len(i.content)
+	return i.position >= len(i.content) && inputSelect()
 }
 
 // draw the intro
 func (i intro) draw(screen *ebiten.Image) {
+
+	theImage := peopleImage.SubImage(image.Rect(
+		globalNumPeopleGraphics*globalPeopleGraphicsWidth, 0,
+		(globalNumPeopleGraphics+1)*globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image)
+	scaleFactor := 4
+	lineNum := 0
+	for y := -globalPeopleGraphicsHeight * scaleFactor; y < globalHeight; y += (globalPeopleGraphicsHeight * scaleFactor) / 4 {
+		lineNum++
+		for x := (lineNum%2)*(globalPeopleGraphicsWidth*scaleFactor)/2 - globalPeopleGraphicsWidth*scaleFactor; x < globalWidth; x += globalPeopleGraphicsWidth * scaleFactor {
+			opt := &ebiten.DrawImageOptions{}
+			opt.GeoM.Scale(float64(scaleFactor), float64(scaleFactor))
+			opt.GeoM.Translate(float64(x), float64(y))
+			opt.ColorScale.Scale(0.3, 0.2, 0.2, 1)
+			screen.DrawImage(theImage, opt)
+		}
+	}
+
 	position := i.position
 	if position >= len(i.content) {
 		position = len(i.content) - 1
