@@ -35,8 +35,8 @@ const (
 	// deck characteristics
 	globalDeckSize = globalGridWidth*globalGridHeight - 1
 	// tile set characteristics
-	globalNumCops   = 50
-	globalNumPeople = 80
+	globalNumCops   = 100
+	globalNumPeople = 150
 	globalNumNature = 0
 	globalNumTiles  = 70
 	// score characteristics

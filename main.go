@@ -31,6 +31,7 @@ func main() {
 	loadGraphics()
 	loadFonts()
 	loadTitleButtons()
+	generateCharacters()
 
 	g := &game{}
 	g.state = stateLanguageSelect

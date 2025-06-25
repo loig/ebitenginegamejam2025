@@ -19,6 +19,21 @@ package main
 
 import "math/rand"
 
+var copSet [8]int = [8]int{
+	globalNumPeopleGraphics + 2, globalNumPeopleGraphics + 2, globalNumPeopleGraphics + 2, globalNumPeopleGraphics + 2,
+	globalNumPeopleGraphics + 2, globalNumPeopleGraphics + 2, globalNumPeopleGraphics + 2, globalNumPeopleGraphics + 2,
+}
+
+var peopleSet [8]int = [8]int{
+	globalNumPeopleGraphics, globalNumPeopleGraphics, globalNumPeopleGraphics, globalNumPeopleGraphics,
+	globalNumPeopleGraphics, globalNumPeopleGraphics, globalNumPeopleGraphics, globalNumPeopleGraphics,
+}
+
+var manyCopsSet [8]int = [8]int{
+	globalNumPeopleGraphics + 1, globalNumPeopleGraphics + 1, globalNumPeopleGraphics + 1, globalNumPeopleGraphics + 1,
+	globalNumPeopleGraphics + 1, globalNumPeopleGraphics + 1, globalNumPeopleGraphics + 1, globalNumPeopleGraphics + 1,
+}
+
 func genTileSet() (tileSet [globalNumTiles]tile) {
 	// add cops
 	for addedCops := 0; addedCops < globalNumCops; addedCops++ {
@@ -34,6 +49,7 @@ func genTileSet() (tileSet [globalNumTiles]tile) {
 		}
 
 		tileSet[tilePosition].content[tileSide] = contentCop
+		tileSet[tilePosition].people[tileSide] = copSet
 	}
 
 	// add people
@@ -50,6 +66,7 @@ func genTileSet() (tileSet [globalNumTiles]tile) {
 		}
 
 		tileSet[tilePosition].content[tileSide] = contentPeople
+		tileSet[tilePosition].people[tileSide] = peopleSet
 	}
 
 	// add nature
