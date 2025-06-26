@@ -25,7 +25,7 @@ func main() {
 
 	ebiten.SetWindowTitle("Union (working title)")
 	//ebiten.SetWindowSize(globalWidth, globalHeight)
-	ebiten.SetWindowSize(600, 600)
+	ebiten.SetWindowSize(800, 800)
 	//ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	loadGraphics()

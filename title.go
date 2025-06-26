@@ -18,13 +18,11 @@
 package main
 
 import (
+	"fmt"
 	"image"
-	"image/color"
 	"math/rand/v2"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 type titleButton struct {
@@ -47,40 +45,44 @@ var characters []int
 func loadTitleButtons() {
 	titleButtons = []titleButton{
 		titleButton{
-			x: 20, y: 20, width: 100, height: 20,
+			x: (globalWidth - globalTitleButtonWidth) / 2, y: 700, width: globalTitleButtonWidth, height: globalTitleButtonHeight,
 			frenchContent:  "Crédits",
 			englishContent: "Credits",
 			effect:         func(g *game) { g.state = stateCredits },
 		},
 		titleButton{
-			x: 20, y: 60, width: 100, height: 20,
+			x: (globalWidth - globalTitleButtonWidth) / 2, y: 475,
+			width: globalTitleButtonWidth, height: globalTitleButtonHeight,
 			frenchContent:  "Comment jouer",
 			englishContent: "How to play",
 			effect:         func(g *game) { g.state = stateHowTo },
 		},
 		titleButton{
-			x: 20, y: 100, width: 100, height: 20,
+			x: (globalWidth - globalTitleButtonWidth) / 2, y: 550,
+			width: globalTitleButtonWidth, height: globalTitleButtonHeight,
 			frenchContent:  "Trophées",
 			englishContent: "Achievements",
 			effect:         func(g *game) { g.state = stateAchievements },
 		},
 		titleButton{
-			x: 20, y: 140, width: 100, height: 20,
+			x: (globalWidth - globalTitleButtonWidth) / 2, y: 400,
+			width: globalTitleButtonWidth, height: globalTitleButtonHeight,
 			frenchContent:  "Jouer",
 			englishContent: "Play",
 			effect:         func(g *game) { g.state = statePlay },
 		},
 		titleButton{
-			x: 20, y: 220, width: 100, height: 20,
-			frenchContent:  "Revoir l'intro",
-			englishContent: "See the introduction again",
+			x: (globalWidth - globalTitleButtonWidth) / 2, y: 625,
+			width: globalTitleButtonWidth, height: globalTitleButtonHeight,
+			frenchContent:  "Revoir l'introduction",
+			englishContent: "See the introduction",
 			effect:         func(g *game) { g.state = stateIntro },
 		},
 		titleButton{
 			x: globalWidth - globalFlagWidth/4 - 10, y: 10,
 			width: globalFlagWidth / 4, height: globalFlagHeight / 4,
-			frenchImage:  flagsImage.SubImage(image.Rect(0, 0, globalFlagWidth, globalFlagHeight)).(*ebiten.Image),
-			englishImage: flagsImage.SubImage(image.Rect(globalFlagWidth, 0, 2*globalFlagWidth, globalFlagHeight)).(*ebiten.Image),
+			englishImage: flagsImage.SubImage(image.Rect(0, 0, globalFlagWidth, globalFlagHeight)).(*ebiten.Image),
+			frenchImage:  flagsImage.SubImage(image.Rect(globalFlagWidth, 0, 2*globalFlagWidth, globalFlagHeight)).(*ebiten.Image),
 			imageScale:   0.25,
 			effect:       func(g *game) { toggleLanguage() },
 		},
@@ -150,6 +152,14 @@ func (g game) drawTitle(screen *ebiten.Image) {
 		}
 	}
 
+	// draw the title
+	opt := &ebiten.DrawImageOptions{}
+	opt.GeoM.Translate(
+		float64(globalWidth-globalTitleWidth)/2,
+		float64(globalTitleY),
+	)
+	screen.DrawImage(titleImage, opt)
+
 	// draw the buttons
 	for _, button := range titleButtons {
 		if button.frenchImage == nil {
@@ -157,12 +167,16 @@ func (g game) drawTitle(screen *ebiten.Image) {
 			if language == englishLanguage {
 				theText = button.englishContent
 			}
-			theColor := color.Gray16{16000}
-			if button.hover {
-				theColor = color.White
+			//vector.DrawFilledRect(screen, float32(button.x), float32(button.y), float32(button.width), float32(button.height), theColor, false)
+			opt := &ebiten.DrawImageOptions{}
+			if !button.hover {
+				opt.ColorScale.Scale(0.6, 0.6, 0.6, 1)
 			}
-			vector.DrawFilledRect(screen, float32(button.x), float32(button.y), float32(button.width), float32(button.height), theColor, false)
-			ebitenutil.DebugPrintAt(screen, theText, button.x+10, button.y+5)
+			opt.GeoM.Translate(float64(button.x), float64(button.y))
+			screen.DrawImage(buttonbackImage, opt)
+
+			drawTextCenteredAt(theText, float64(button.x+button.width/2), float64(button.y+10), screen)
+			//ebitenutil.DebugPrintAt(screen, theText, button.x+10, button.y+5)
 		} else {
 			theImage := button.frenchImage
 			if language == englishLanguage {
@@ -175,8 +189,20 @@ func (g game) drawTitle(screen *ebiten.Image) {
 		}
 	}
 
+	// draw the score
 	if g.score.max > 0 {
-		g.score.drawMaxAt(screen, globalTitleMaxScoreX, globalTitleMaxScoreY)
+		x := float64(globalWidth-globalTitleButtonWidth) / 2
+		y := 250.0
+		opt := &ebiten.DrawImageOptions{}
+		opt.GeoM.Translate(x, y)
+		screen.DrawImage(buttonbackImage, opt)
+
+		textInfo := "Meilleur score :"
+		if language == englishLanguage {
+			textInfo = "Best score:"
+		}
+		text := fmt.Sprintf("%s %d", textInfo, g.score.max)
+		drawTextCenteredAt(text, float64(globalWidth/2), y+10.0, screen)
 	}
 
 }

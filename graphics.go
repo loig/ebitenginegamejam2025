@@ -59,6 +59,14 @@ var flagsImage *ebiten.Image
 var peopleBytes []byte
 var peopleImage *ebiten.Image
 
+//go:embed title.png
+var titleBytes []byte
+var titleImage *ebiten.Image
+
+//go:embed buttonback.png
+var buttonbackBytes []byte
+var buttonbackImage *ebiten.Image
+
 func loadGraphics() {
 	decoded, _, err := image.Decode(bytes.NewReader(backgroundBytes))
 	if err != nil {
@@ -107,4 +115,16 @@ func loadGraphics() {
 		log.Fatal(err)
 	}
 	peopleImage = ebiten.NewImageFromImage(decoded)
+
+	decoded, _, err = image.Decode(bytes.NewReader(titleBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	titleImage = ebiten.NewImageFromImage(decoded)
+
+	decoded, _, err = image.Decode(bytes.NewReader(buttonbackBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	buttonbackImage = ebiten.NewImageFromImage(decoded)
 }

@@ -44,11 +44,14 @@ func loadFonts() {
 	}
 }
 
-func drawTextAt(theText string, x, y int, screen *ebiten.Image) {
+func drawTextAt(theText string, x, y float64, screen *ebiten.Image) (height float64) {
 	op := &text.DrawOptions{}
-	op.GeoM.Translate(float64(x), float64(y))
+	op.GeoM.Translate(x, y)
 	op.LineSpacing = workSansFace.Size * 1.5
 	text.Draw(screen, theText, workSansFace, op)
+
+	_, height = text.Measure(theText, workSansFace, workSansFace.Size*1.5)
+	return
 }
 
 func drawTextCenteredAt(theText string, x, y float64, screen *ebiten.Image) (height float64) {

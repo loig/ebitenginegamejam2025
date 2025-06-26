@@ -19,7 +19,6 @@ package main
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 func (g *game) Draw(screen *ebiten.Image) {
@@ -34,17 +33,9 @@ func (g *game) Draw(screen *ebiten.Image) {
 	case stateTitle:
 		g.drawTitle(screen)
 	case stateCredits:
-		if language == frenchLanguage {
-			ebitenutil.DebugPrint(screen, "Crédits")
-		} else {
-			ebitenutil.DebugPrint(screen, "Credits")
-		}
+		drawCredits(screen)
 	case stateHowTo:
-		if language == frenchLanguage {
-			ebitenutil.DebugPrint(screen, "Comment jouer")
-		} else {
-			ebitenutil.DebugPrint(screen, "How to play")
-		}
+		drawHowToPlay(screen)
 	case stateAchievements:
 		g.drawAchievementsScreen(screen)
 	case statePlay:

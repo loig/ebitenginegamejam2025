@@ -54,6 +54,7 @@ func (g *game) Update() error {
 		if g.state == stateIntro {
 			g.SoundManager.ChangeMusic(introMusicTrack)
 			g.intro.reset()
+			resetTitle()
 		}
 	case stateCredits, stateHowTo, stateAchievements:
 		if inputSelect() {

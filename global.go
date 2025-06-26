@@ -55,8 +55,12 @@ const (
 	globalLiveDisplayAchievementsSize = 20
 	globalLiveDisplayAchievementsSep  = 10
 	// title screen characteristics
-	globalTitleMaxScoreX = 20
-	globalTitleMaxScoreY = globalHeight - 20
+	globalTitleMaxScoreX    = 20
+	globalTitleMaxScoreY    = globalHeight - 20
+	globalTitleY            = 100
+	globalTitleWidth        = 627
+	globalTitleButtonWidth  = 346
+	globalTitleButtonHeight = 50
 	// end screen characteristics
 	globalEndDisplayAchievementTime = 120
 	globalEndDisplayAchievementX    = globalWidth/2 - 100
