@@ -74,11 +74,13 @@ func (g *game) Update() error {
 			g.soundManager.NextSounds[soundSelectID] = true
 		}
 	case statePlay:
+		g.updateTooglePeople(mouseX, mouseY)
 		g.particles.update()
 		if g.updatePlay(mouseX, mouseY) {
 			g.state = stateEndPlay
 		}
 	case stateEndPlay:
+		g.updateTooglePeople(mouseX, mouseY)
 		g.particles.update()
 		if inputSelect() {
 			g.state = stateEnd
@@ -104,6 +106,14 @@ func (g *game) Update() error {
 func inputSelect() bool {
 	return inpututil.IsKeyJustPressed(ebiten.KeyEnter) ||
 		inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft)
+}
+
+func (g *game) updateTooglePeople(mouseX, mouseY int) {
+	if mouseX >= globalWidth-globalTogglePeopleWidth/globalTogglePeopleScale && mouseX < globalWidth &&
+		mouseY >= 0 && mouseY < globalTogglePeopleHeight/globalTogglePeopleScale &&
+		inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		g.drawPeople = !g.drawPeople
+	}
 }
 
 func (g *game) updatePlay(mouseX, mouseY int) (finished bool) {

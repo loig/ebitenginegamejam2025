@@ -58,7 +58,7 @@ func drawHowToPlay(screen *ebiten.Image) {
 	}, people: [4][8]int{copSet, peopleSet, peopleSet, copSet}}
 
 	x, y := 20, 20
-	tile1.draw(x, y, screen)
+	tile1.draw(x, y, screen, true)
 	height := drawTextAt(howTo[0], float64(x+100), float64(y), screen)
 
 	y += int(height) + 5
@@ -75,7 +75,7 @@ func drawHowToPlay(screen *ebiten.Image) {
 	tile2.content[0] = contentPeople
 	tile2.people[0] = peopleSet
 
-	tile2.draw(x, y, screen)
+	tile2.draw(x, y, screen, true)
 	drawTextAt(howTo[3], float64(x+100), float64(y), screen)
 
 	y += 100
@@ -84,7 +84,7 @@ func drawHowToPlay(screen *ebiten.Image) {
 	tile3.content[0] = contentCop
 	tile3.people[0] = copSet
 
-	tile3.draw(x, y, screen)
+	tile3.draw(x, y, screen, true)
 	drawTextAt(howTo[4], float64(x+100), float64(y), screen)
 
 	y += 100
@@ -92,7 +92,7 @@ func drawHowToPlay(screen *ebiten.Image) {
 	tile4.content[0] = contentManyCops
 	tile4.people[0] = manyCopsSet
 
-	tile4.draw(x, y, screen)
+	tile4.draw(x, y, screen, true)
 	height = drawTextAt(howTo[5], float64(x+100), float64(y), screen)
 
 	y += 100
@@ -108,7 +108,7 @@ func drawHowToPlay(screen *ebiten.Image) {
 		{8, 9, 10, 11, 12, 13, 14, 15},
 	}
 
-	tile5.draw(x, y, screen)
+	tile5.draw(x, y, screen, true)
 	height = drawTextAt(howTo[6], float64(x+100), float64(y), screen)
 
 	y += 100

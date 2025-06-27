@@ -83,6 +83,14 @@ var achievementsmallImage *ebiten.Image
 var bonusBytes []byte
 var bonusImage *ebiten.Image
 
+//go:embed togglepeopleon.png
+var togglepeopleonBytes []byte
+var togglepeopleonImage *ebiten.Image
+
+//go:embed togglepeopleoff.png
+var togglepeopleoffBytes []byte
+var togglepeopleoffImage *ebiten.Image
+
 func loadGraphics() {
 	decoded, _, err := image.Decode(bytes.NewReader(backgroundBytes))
 	if err != nil {
@@ -167,4 +175,16 @@ func loadGraphics() {
 		log.Fatal(err)
 	}
 	bonusImage = ebiten.NewImageFromImage(decoded)
+
+	decoded, _, err = image.Decode(bytes.NewReader(togglepeopleonBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	togglepeopleonImage = ebiten.NewImageFromImage(decoded)
+
+	decoded, _, err = image.Decode(bytes.NewReader(togglepeopleoffBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	togglepeopleoffImage = ebiten.NewImageFromImage(decoded)
 }

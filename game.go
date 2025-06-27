@@ -31,6 +31,7 @@ type game struct {
 	titleChoice             gameState
 	soundManager            soundManager
 	particles               particleSet
+	drawPeople              bool
 }
 
 type gameState = int

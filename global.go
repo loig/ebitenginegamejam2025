@@ -83,6 +83,9 @@ const (
 	globalNumPeopleGraphics    = 15
 	globalPeopleGraphicsWidth  = 16
 	globalPeopleGraphicsHeight = 32
+	globalTogglePeopleWidth    = 40
+	globalTogglePeopleHeight   = 60
+	globalTogglePeopleScale    = 2
 	// screen size
 	globalWidth  = 800
 	globalHeight = 800

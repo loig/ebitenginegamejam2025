@@ -56,13 +56,23 @@ func (g game) drawPlay(finished bool, screen *ebiten.Image) {
 	opt := &ebiten.DrawImageOptions{}
 	screen.DrawImage(backgroundImage, opt)
 
+	// Draw the toggle people button
+	toggleImage := togglepeopleonImage
+	if g.drawPeople {
+		toggleImage = togglepeopleoffImage
+	}
+	toogleOpt := &ebiten.DrawImageOptions{}
+	toogleOpt.GeoM.Scale(1.0/float64(globalTogglePeopleScale), 1.0/float64(globalTogglePeopleScale))
+	toogleOpt.GeoM.Translate(float64(globalWidth-globalTogglePeopleWidth/globalTogglePeopleScale), 0)
+	screen.DrawImage(toggleImage, toogleOpt)
+
 	// Draw the grid
 	tileY := globalGridY
 	for y, line := range g.playArea.grid {
 		tileX := globalGridX
 		for x, tile := range line {
 			if g.playArea.gridHasTile[y][x] {
-				tile.draw(tileX, tileY, screen)
+				tile.draw(tileX, tileY, screen, g.drawPeople)
 			}
 			tileX += globalTileSize
 		}
@@ -74,14 +84,14 @@ func (g game) drawPlay(finished bool, screen *ebiten.Image) {
 	for pos, tile := range g.playArea.hand {
 		//mouseHover := (g.playArea.handHoverPos == pos) && g.playArea.handHover
 		if g.playArea.handHasTile[pos] && !(g.playArea.holdTile && g.playArea.heldHandTile == pos) {
-			tile.draw(tileX, tileY, screen)
+			tile.draw(tileX, tileY, screen, g.drawPeople)
 		}
 		tileY += globalTileSize + globalHandSep
 	}
 
 	// Draw the held tile
 	if g.playArea.holdTile {
-		g.playArea.hand[g.playArea.heldHandTile].draw(g.playArea.holdX, g.playArea.holdY, screen)
+		g.playArea.hand[g.playArea.heldHandTile].draw(g.playArea.holdX, g.playArea.holdY, screen, g.drawPeople)
 	}
 
 	// Draw the score

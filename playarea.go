@@ -624,7 +624,7 @@ func (c contentPosition) getNeighbors() []contentPosition {
 	return res
 }
 
-func (t tile) draw(tileX, tileY int, screen *ebiten.Image) {
+func (t tile) draw(tileX, tileY int, screen *ebiten.Image, drawPeople bool) {
 
 	// background
 	opt := &ebiten.DrawImageOptions{}
@@ -634,21 +634,21 @@ func (t tile) draw(tileX, tileY int, screen *ebiten.Image) {
 	// quarters
 	// top left
 	x, y := tileX+2, tileY+2
-	drawTileQuarter(x, y, t.content[0], t.corners[0], t.neighboring[0], t.contentGroupSize[0], t.people[0], true, true, true, screen)
+	drawTileQuarter(x, y, t.content[0], t.corners[0], t.neighboring[0], t.contentGroupSize[0], t.people[0], true, true, true, screen, drawPeople)
 	// top right
 	x += globalTileSize/2 - 4
-	drawTileQuarter(x, y, t.content[1], t.corners[1], t.neighboring[1], t.contentGroupSize[1], t.people[1], false, false, true, screen)
+	drawTileQuarter(x, y, t.content[1], t.corners[1], t.neighboring[1], t.contentGroupSize[1], t.people[1], false, false, true, screen, drawPeople)
 	// bottom left
 	x -= globalTileSize/2 - 4
 	y += globalTileSize/2 - 4
-	drawTileQuarter(x, y, t.content[3], t.corners[3], t.neighboring[3], t.contentGroupSize[3], t.people[3], false, true, false, screen)
+	drawTileQuarter(x, y, t.content[3], t.corners[3], t.neighboring[3], t.contentGroupSize[3], t.people[3], false, true, false, screen, drawPeople)
 	// bottom right
 	x += globalTileSize/2 - 4
-	drawTileQuarter(x, y, t.content[2], t.corners[2], t.neighboring[2], t.contentGroupSize[2], t.people[2], true, false, false, screen)
+	drawTileQuarter(x, y, t.content[2], t.corners[2], t.neighboring[2], t.contentGroupSize[2], t.people[2], true, false, false, screen, drawPeople)
 }
 
 // draw one quarter of a tile
-func drawTileQuarter(x, y int, content tileContent, corners [4]bool, neighboring int, groupSize int, people [8]int, isOdd bool, isLeft bool, isTop bool, screen *ebiten.Image) {
+func drawTileQuarter(x, y int, content tileContent, corners [4]bool, neighboring int, groupSize int, people [8]int, isOdd bool, isLeft bool, isTop bool, screen *ebiten.Image, drawPeople bool) {
 	if content == contentCop || content == contentPeople || content == contentDemonstration || content == contentManyCops {
 		theImage := copsbackImage
 		if content == contentPeople {
@@ -667,118 +667,120 @@ func drawTileQuarter(x, y int, content tileContent, corners [4]bool, neighboring
 		drawCorners(corners, x, y, screen, theImage)
 
 		// people
-		if groupSize <= 1 {
-			opt = &ebiten.DrawImageOptions{}
-			middleX := x - globalPeopleGraphicsWidth/2 + globalTileSize/4
-			middleY := y - globalPeopleGraphicsHeight + 4 + globalTileSize/4
-			opt.GeoM.Translate(float64(middleX), float64(middleY))
-			peopleX := people[0] * globalPeopleGraphicsWidth
-			screen.DrawImage(peopleImage.SubImage(image.Rect(peopleX, 0, peopleX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
-		} else {
-
-			numPeople := 0
-
-			hasLeft := neighboring >= 8
-			hasTop := neighboring%2 == 1
-			//hasBottom := (neighboring/4)%2 == 1
-			//hasRight := (neighboring/2)%2 == 1
-
-			sepWidth := 16
-			sepHeight := 13
-			backMove := -(sepWidth + sepWidth/2)
-
-			startX := x + sepWidth/4 + 1
-			startY := y - globalPeopleGraphicsWidth
-			if isLeft {
-				startX -= 3
-			} else {
-				startX += 1
-			}
-			if isTop {
-				startY -= 2
-			} else {
-				startY += 2
-			}
-
-			peopleX := func() int {
-				res := people[numPeople] * globalPeopleGraphicsWidth
-				numPeople++
-				return res
-			}
-
-			if hasTop && hasLeft && !corners[0] {
-				startXCorner := startX - sepWidth
-				if isOdd {
-					startXCorner += sepWidth / 2
-				}
-				startYCorner := startY - sepHeight
+		if drawPeople {
+			if groupSize <= 1 {
 				opt = &ebiten.DrawImageOptions{}
-				opt.GeoM.Translate(float64(startXCorner), float64(startYCorner))
-				pX := peopleX()
-				screen.DrawImage(peopleImage.SubImage(image.Rect(pX, 0, pX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
-			}
+				middleX := x - globalPeopleGraphicsWidth/2 + globalTileSize/4
+				middleY := y - globalPeopleGraphicsHeight + 4 + globalTileSize/4
+				opt.GeoM.Translate(float64(middleX), float64(middleY))
+				peopleX := people[0] * globalPeopleGraphicsWidth
+				screen.DrawImage(peopleImage.SubImage(image.Rect(peopleX, 0, peopleX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
+			} else {
 
-			if hasTop {
-				startXTop := startX + sepWidth/2
-				startYTop := startY - sepHeight
-				if !isOdd {
-					startXTop -= sepWidth / 2
+				numPeople := 0
+
+				hasLeft := neighboring >= 8
+				hasTop := neighboring%2 == 1
+				//hasBottom := (neighboring/4)%2 == 1
+				//hasRight := (neighboring/2)%2 == 1
+
+				sepWidth := 16
+				sepHeight := 13
+				backMove := -(sepWidth + sepWidth/2)
+
+				startX := x + sepWidth/4 + 1
+				startY := y - globalPeopleGraphicsWidth
+				if isLeft {
+					startX -= 3
+				} else {
+					startX += 1
+				}
+				if isTop {
+					startY -= 2
+				} else {
+					startY += 2
 				}
 
+				peopleX := func() int {
+					res := people[numPeople] * globalPeopleGraphicsWidth
+					numPeople++
+					return res
+				}
+
+				if hasTop && hasLeft && !corners[0] {
+					startXCorner := startX - sepWidth
+					if isOdd {
+						startXCorner += sepWidth / 2
+					}
+					startYCorner := startY - sepHeight
+					opt = &ebiten.DrawImageOptions{}
+					opt.GeoM.Translate(float64(startXCorner), float64(startYCorner))
+					pX := peopleX()
+					screen.DrawImage(peopleImage.SubImage(image.Rect(pX, 0, pX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
+				}
+
+				if hasTop {
+					startXTop := startX + sepWidth/2
+					startYTop := startY - sepHeight
+					if !isOdd {
+						startXTop -= sepWidth / 2
+					}
+
+					opt = &ebiten.DrawImageOptions{}
+					opt.GeoM.Translate(float64(startXTop), float64(startYTop))
+					pX := peopleX()
+					screen.DrawImage(peopleImage.SubImage(image.Rect(pX, 0, pX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
+
+					if !isOdd {
+						opt.GeoM.Translate(float64(sepWidth), 0)
+						pX := peopleX()
+						screen.DrawImage(peopleImage.SubImage(image.Rect(pX, 0, pX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
+					}
+				}
+
+				if !isOdd {
+					startX += sepWidth / 2
+				}
+				if hasLeft {
+					startX -= sepWidth
+				}
+
 				opt = &ebiten.DrawImageOptions{}
-				opt.GeoM.Translate(float64(startXTop), float64(startYTop))
+				opt.GeoM.Translate(float64(startX), float64(startY))
 				pX := peopleX()
 				screen.DrawImage(peopleImage.SubImage(image.Rect(pX, 0, pX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
 
-				if !isOdd {
+				if hasLeft {
 					opt.GeoM.Translate(float64(sepWidth), 0)
 					pX := peopleX()
 					screen.DrawImage(peopleImage.SubImage(image.Rect(pX, 0, pX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
 				}
-			}
 
-			if !isOdd {
-				startX += sepWidth / 2
-			}
-			if hasLeft {
-				startX -= sepWidth
-			}
-
-			opt = &ebiten.DrawImageOptions{}
-			opt.GeoM.Translate(float64(startX), float64(startY))
-			pX := peopleX()
-			screen.DrawImage(peopleImage.SubImage(image.Rect(pX, 0, pX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
-
-			if hasLeft {
 				opt.GeoM.Translate(float64(sepWidth), 0)
-				pX := peopleX()
+				if !isOdd {
+					opt.GeoM.Translate(float64(backMove), float64(sepHeight))
+					if hasLeft {
+						opt.GeoM.Translate(-float64(sepWidth), 0)
+					}
+				}
+				pX = peopleX()
 				screen.DrawImage(peopleImage.SubImage(image.Rect(pX, 0, pX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
-			}
 
-			opt.GeoM.Translate(float64(sepWidth), 0)
-			if !isOdd {
-				opt.GeoM.Translate(float64(backMove), float64(sepHeight))
-				if hasLeft {
-					opt.GeoM.Translate(-float64(sepWidth), 0)
-				}
-			}
-			pX = peopleX()
-			screen.DrawImage(peopleImage.SubImage(image.Rect(pX, 0, pX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
-
-			opt.GeoM.Translate(float64(sepWidth), 0)
-			if isOdd {
-				opt.GeoM.Translate(float64(backMove), float64(sepHeight))
-				if hasLeft {
-					opt.GeoM.Translate(-float64(sepWidth), 0)
-				}
-			}
-			pX = peopleX()
-			screen.DrawImage(peopleImage.SubImage(image.Rect(pX, 0, pX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
-
-			if hasLeft {
 				opt.GeoM.Translate(float64(sepWidth), 0)
-				pX := peopleX()
+				if isOdd {
+					opt.GeoM.Translate(float64(backMove), float64(sepHeight))
+					if hasLeft {
+						opt.GeoM.Translate(-float64(sepWidth), 0)
+					}
+				}
+				pX = peopleX()
 				screen.DrawImage(peopleImage.SubImage(image.Rect(pX, 0, pX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
+
+				if hasLeft {
+					opt.GeoM.Translate(float64(sepWidth), 0)
+					pX := peopleX()
+					screen.DrawImage(peopleImage.SubImage(image.Rect(pX, 0, pX+globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image), opt)
+				}
 			}
 		}
 	}
