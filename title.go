@@ -103,7 +103,7 @@ func (g *game) updateTitle(mouseX, mouseY int) {
 		if mouseX >= button.x && mouseX < button.x+button.width &&
 			mouseY >= button.y && mouseY < button.y+button.height {
 			if !titleButtons[buttonPosition].hover {
-				g.SoundManager.NextSounds[soundMvtID] = true
+				g.soundManager.NextSounds[soundMvtID] = true
 			}
 			titleButtons[buttonPosition].hover = true
 			if inputSelect() {

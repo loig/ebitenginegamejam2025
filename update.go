@@ -28,69 +28,72 @@ func (g *game) Update() error {
 
 	g.liveDisplayUpdateAchievements()
 
-	g.SoundManager.UpdateMusic(0.5)
+	g.soundManager.UpdateMusic(0.5)
 
-	g.SoundManager.PlaySounds()
+	g.soundManager.PlaySounds()
 
 	switch g.state {
 	case stateLanguageSelect:
 		finished, changed := languageSelectUpdate(mouseX)
 		if changed {
-			g.SoundManager.NextSounds[soundMvtID] = true
+			g.soundManager.NextSounds[soundMvtID] = true
 		}
 		if finished {
 			g.state = stateIntro
-			g.SoundManager.ChangeMusic(introMusicTrack)
+			g.soundManager.ChangeMusic(introMusicTrack)
 			g.intro.reset()
-			g.SoundManager.NextSounds[soundSelectID] = true
+			g.soundManager.NextSounds[soundSelectID] = true
 		}
 	case stateIntro:
 		if g.intro.update() {
 			g.state = stateTitle
-			g.SoundManager.ChangeMusic(titleMusicTrack)
+			g.soundManager.ChangeMusic(titleMusicTrack)
 			resetTitle()
-			g.SoundManager.NextSounds[soundSelectID] = true
+			g.soundManager.NextSounds[soundSelectID] = true
 		}
 	case stateTitle:
 		g.updateTitle(mouseX, mouseY)
 		if g.state != stateTitle {
-			g.SoundManager.NextSounds[soundSelectID] = true
+			g.soundManager.NextSounds[soundSelectID] = true
 		}
 		if g.state == statePlay {
-			g.SoundManager.ChangeMusic(themeMusicTrack)
+			g.soundManager.ChangeMusic(themeMusicTrack)
 			g.playArea = buildPlayArea()
 			g.score.reset()
 			g.timeHandler.reset()
 			g.newAchievementPositions = nil
 		}
 		if g.state == stateIntro {
-			g.SoundManager.ChangeMusic(introMusicTrack)
+			g.soundManager.ChangeMusic(introMusicTrack)
 			g.intro.reset()
 		}
 	case stateCredits, stateHowTo, stateAchievements:
 		if inputSelect() {
 			g.state = stateTitle
 			resetTitle()
-			g.SoundManager.NextSounds[soundSelectID] = true
+			g.soundManager.NextSounds[soundSelectID] = true
 		}
 	case statePlay:
+		g.particles.update()
 		if g.updatePlay(mouseX, mouseY) {
 			g.state = stateEndPlay
 		}
 	case stateEndPlay:
+		g.particles.update()
 		if inputSelect() {
 			g.state = stateEnd
-			g.SoundManager.ChangeMusic(titleMusicTrack)
+			g.soundManager.ChangeMusic(titleMusicTrack)
 			g.score.setMax()
 			g.setupEnd()
-			g.SoundManager.NextSounds[soundSelectID] = true
+			g.soundManager.NextSounds[soundSelectID] = true
+			g.particles.reset()
 		}
 	case stateEnd:
 		g.updateEnd()
 		if inputSelect() {
 			g.state = stateTitle
 			resetTitle()
-			g.SoundManager.NextSounds[soundSelectID] = true
+			g.soundManager.NextSounds[soundSelectID] = true
 		}
 	}
 
@@ -112,7 +115,7 @@ func (g *game) updatePlay(mouseX, mouseY int) (finished bool) {
 		if !g.playArea.holdTile && g.playArea.handHover && g.playArea.handHasTile[g.playArea.handHoverPos] {
 			g.playArea.holdTile = true
 			g.playArea.heldHandTile = g.playArea.handHoverPos
-			g.SoundManager.NextSounds[soundMvtID] = true
+			g.soundManager.NextSounds[soundMvtID] = true
 		}
 	}
 
@@ -124,7 +127,7 @@ func (g *game) updatePlay(mouseX, mouseY int) (finished bool) {
 		g.playArea.holdX = globalGridX + g.playArea.gridHoverX*globalTileSize
 		g.playArea.holdY = globalGridY + g.playArea.gridHoverY*globalTileSize
 		if g.playArea.holdTile && (g.playArea.holdX != oldX || g.playArea.holdY != oldY) {
-			g.SoundManager.NextSounds[soundMvtID] = true
+			g.soundManager.NextSounds[soundMvtID] = true
 		}
 	}
 
@@ -132,11 +135,18 @@ func (g *game) updatePlay(mouseX, mouseY int) (finished bool) {
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
 		if g.playArea.canDropTile() {
 			g.playArea.dropTile()
-			g.score.update(getTimePoints(g.timeHandler.currentTime), getDemonstrationPoints(g.playArea.demonstrationSize), getCopsPoints(g.playArea.maxCopsSize))
+			timePoints := getTimePoints(g.timeHandler.currentTime)
+			if timePoints != 0 {
+				g.particles.addParticle(globalTimeX+120, globalTimeY, timePoints)
+			}
+			demonstrationIncrement, copsIncrement := g.score.update(timePoints, getDemonstrationPoints(g.playArea.demonstrationSize), getCopsPoints(g.playArea.maxCopsSize))
+			if demonstrationIncrement != 0 || copsIncrement != 0 {
+				g.particles.addParticle(g.playArea.holdX+globalTileSize/2, g.playArea.holdY+globalTileSize/2-20, demonstrationIncrement+copsIncrement)
+			}
 			g.checkAchievements()
 			g.playArea.drawNewTile(g.playArea.heldHandTile)
 			g.timeHandler.reset()
-			g.SoundManager.NextSounds[soundDropID] = true
+			g.soundManager.NextSounds[soundDropID] = true
 		}
 		g.playArea.holdTile = false
 	}

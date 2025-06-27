@@ -38,8 +38,10 @@ func (g *game) Draw(screen *ebiten.Image) {
 		g.drawAchievementsScreen(screen)
 	case statePlay:
 		g.drawPlay(false, screen)
+		g.particles.draw(screen)
 	case stateEndPlay:
 		g.drawPlay(true, screen)
+		g.particles.draw(screen)
 	case stateEnd:
 		g.drawEnd(screen)
 	}

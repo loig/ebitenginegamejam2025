@@ -145,7 +145,7 @@ func (g *game) checkAchievements() {
 			g.achievements[achievementPos].obtained = g.achievements[achievementPos].condition(g.playArea)
 			if g.achievements[achievementPos].obtained {
 				g.newAchievementPositions = append(g.newAchievementPositions, achievementPos)
-				g.SoundManager.NextSounds[soundAchievementID] = true
+				g.soundManager.NextSounds[soundAchievementID] = true
 			}
 		}
 	}

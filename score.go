@@ -36,7 +36,7 @@ func (s *score) update(timePoints, demonstrationPoints, copsPoints int) (demonst
 	s.fromTime += timePoints
 
 	demonstrationsIncrement = demonstrationPoints - s.fromDemonstration
-	copsDecrement = copsPoints - s.fromCops
+	copsDecrement = -(copsPoints - s.fromCops)
 
 	s.fromDemonstration = demonstrationPoints
 	s.fromCops = copsPoints

@@ -29,7 +29,8 @@ type game struct {
 	endAchievementPosition  int
 	endGoalReached          goal
 	titleChoice             gameState
-	SoundManager            SoundManager
+	soundManager            soundManager
+	particles               particleSet
 }
 
 type gameState = int

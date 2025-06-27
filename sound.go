@@ -69,14 +69,14 @@ const (
 	numSounds
 )
 
-type SoundManager struct {
+type soundManager struct {
 	audioContext *audio.Context
 	NextSounds   [numSounds]bool
 	musicPlayer  *audio.Player
 }
 
 // play requested sounds
-func (s *SoundManager) PlaySounds() {
+func (s *soundManager) PlaySounds() {
 	for sound, play := range s.NextSounds {
 		if play {
 			s.playSound(sound)
@@ -86,7 +86,7 @@ func (s *SoundManager) PlaySounds() {
 }
 
 // play a sound
-func (s SoundManager) playSound(sound int) {
+func (s soundManager) playSound(sound int) {
 	var soundBytes []byte
 	switch sound {
 	case soundSelectID:
@@ -107,7 +107,7 @@ func (s SoundManager) playSound(sound int) {
 }
 
 // loop the music
-func (s *SoundManager) UpdateMusic(volume float64) {
+func (s *soundManager) UpdateMusic(volume float64) {
 	if s.musicPlayer != nil {
 		if !s.musicPlayer.IsPlaying() {
 			s.musicPlayer.Rewind()
@@ -118,7 +118,7 @@ func (s *SoundManager) UpdateMusic(volume float64) {
 }
 
 // stop the music
-func (s *SoundManager) StopMusic() {
+func (s *soundManager) StopMusic() {
 	if s.musicPlayer != nil {
 		s.musicPlayer.Pause()
 	}
@@ -133,7 +133,7 @@ const (
 	themeMusicTrack
 )
 
-func (s *SoundManager) ChangeMusic(track musicTrack) {
+func (s *soundManager) ChangeMusic(track musicTrack) {
 	s.StopMusic()
 	switch track {
 	case titleMusicTrack:
@@ -146,7 +146,7 @@ func (s *SoundManager) ChangeMusic(track musicTrack) {
 }
 
 // load all audio assets
-func InitAudio() (manager SoundManager) {
+func InitAudio() (manager soundManager) {
 
 	var error error
 	manager.audioContext = audio.NewContext(44100)
