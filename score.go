@@ -42,14 +42,17 @@ func (s *score) update(timePoints, demonstrationPoints, copsPoints int) (demonst
 	s.fromDemonstration = demonstrationPoints
 	s.fromCops = copsPoints
 
-	oldScore := s.current
+	//oldScore := s.current
 	s.current = s.fromTime + s.fromDemonstration - s.fromCops
-	if s.current < 0 {
-		s.current = 0
-		if oldScore == 0 {
-			return 0, copsDecrement
+
+	/*
+		if s.current < 0 {
+			s.current = 0
+			if oldScore == 0 {
+				return 0, copsDecrement
+			}
 		}
-	}
+	*/
 
 	return
 }
@@ -71,8 +74,15 @@ func (s *score) setMax() {
 
 // draw the score
 func (s score) drawCurrentAt(screen *ebiten.Image, scoreX, scoreY int) {
-	theScore := fmt.Sprintf("Score: %d", s.current)
-	ebitenutil.DebugPrintAt(screen, theScore, scoreX, scoreY)
+	prefix := "Score :"
+	if language == englishLanguage {
+		prefix = "Score:"
+	}
+	theScore := fmt.Sprintf("%s %d", prefix, s.current)
+	if s.current < 0 {
+		theScore = fmt.Sprintf("%s 0 (%d)", prefix, s.current)
+	}
+	drawTextAt(theScore, float64(scoreX), float64(scoreY), screen)
 }
 
 func (s score) drawMaxAt(screen *ebiten.Image, scoreX, scoreY int) {
@@ -95,5 +105,9 @@ func getCopsPoints(copsSize int) int {
 
 // get time points from the remaining time
 func getTimePoints(remainingTime int) int {
-	return (remainingTime * 20) / globalAllowedTime
+	baseScore := ((remainingTime * 4) / globalAllowedTime) * 50
+	if remainingTime > 0 {
+		baseScore += 50
+	}
+	return baseScore
 }

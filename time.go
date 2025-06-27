@@ -18,6 +18,7 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -39,6 +40,16 @@ func (t *timeHandler) update() {
 }
 
 func (t timeHandler) draw(screen *ebiten.Image) {
+
+	points := getTimePoints(t.currentTime)
+	prefix := "Bonus :"
+	if language == englishLanguage {
+		prefix = "Bonus:"
+	}
+	text := fmt.Sprintf("%s %d", prefix, points)
+
+	drawTextAt(text, float64(globalTimeX), float64(globalTimeY+5), screen)
+
 	timeWidth := (globalTimeWidth * t.currentTime) / globalAllowedTime
-	vector.DrawFilledRect(screen, float32(globalTimeX), float32(globalTimeY), float32(timeWidth), float32(globalTimeHeight), color.White, false)
+	vector.DrawFilledRect(screen, float32(globalTimeBarX), float32(globalTimeY), float32(timeWidth), float32(globalTimeHeight), color.White, false)
 }

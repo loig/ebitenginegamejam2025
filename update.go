@@ -122,5 +122,8 @@ func (g *game) updatePlay(mouseX, mouseY int) (finished bool) {
 
 	// check end of game
 	finished = g.playArea.checkEndOfPlay()
+	if finished {
+		g.checkAchievements()
+	}
 	return
 }

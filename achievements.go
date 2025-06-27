@@ -23,40 +23,98 @@ import (
 )
 
 type achievement struct {
-	obtained         bool
-	displayed        bool
-	displayTime      int
-	condition        func(playArea) bool
-	frenchText       string
-	englishText      string
-	number           int
-	screenX, screenY int
+	obtained    bool
+	displayed   bool
+	displayTime int
+	condition   func(playArea) bool
+	frenchText  string
+	englishText string
+	number      int
+	//screenX, screenY int
 }
 
 type achievementSet = []achievement
 
 // build the actual achievements
 func makeAchievementSet() achievementSet {
-	return achievementSet{
+	theSet := achievementSet{
 		achievement{
 			frenchText:  "Quelques policiers",
 			englishText: "A few cops",
 			condition: func(p playArea) bool {
 				return p.maxCopsSize >= 2
 			},
-			number:  1,
-			screenX: 20, screenY: 20,
+		},
+		achievement{
+			frenchText:  "Un peu chaud",
+			englishText: "Dangerous protest",
+			condition: func(p playArea) bool {
+				return p.maxCopsSize >= globalNumCops/2
+			},
+		},
+		achievement{
+			frenchText:  "C'est foutu",
+			englishText: "This is the end",
+			condition: func(p playArea) bool {
+				return p.maxCopsSize >= 3*globalNumCops/4
+			},
 		},
 		achievement{
 			frenchText:  "Un début de mobilisation",
-			englishText: "The birth of a demonstration",
+			englishText: "Birth of a demonstration",
 			condition: func(p playArea) bool {
 				return p.demonstrationSize > 4
 			},
-			number:  2,
-			screenX: 20, screenY: 40,
+		},
+		achievement{
+			frenchText:  "On va y arriver",
+			englishText: "Almost there!",
+			condition: func(p playArea) bool {
+				return p.demonstrationSize >= globalNumPeople/2
+			},
+		},
+		achievement{
+			frenchText:  "Cette fois c'est la bonne",
+			englishText: "We will do it!",
+			condition: func(p playArea) bool {
+				return p.demonstrationSize >= globalNumPeople+4
+			},
+		},
+		achievement{
+			frenchText:  "Assignés à résidence",
+			englishText: "No protest here!",
+			condition: func(p playArea) bool {
+				return p.demonstrationSize <= 4 && !p.handHasTile[0] && !p.handHasTile[1] && !p.handHasTile[2] && !p.holdTile
+			},
+		},
+		achievement{
+			frenchText:  "La police avec nous",
+			englishText: "No cops here!",
+			condition: func(p playArea) bool {
+				return p.maxCopsSize <= 4 && !p.handHasTile[0] && !p.handHasTile[1] && !p.handHasTile[2] && !p.holdTile
+			},
+		},
+		achievement{
+			frenchText:  "Trop de policiers",
+			englishText: "Too many cops",
+			condition: func(p playArea) bool {
+				return p.maxCopsSize > p.demonstrationSize
+			},
+		},
+		achievement{
+			frenchText:  "Beaucoup prop de policiers",
+			englishText: "Far too many cops",
+			condition: func(p playArea) bool {
+				return p.maxCopsSize > p.demonstrationSize && !p.handHasTile[0] && !p.handHasTile[1] && !p.handHasTile[2] && !p.holdTile
+			},
 		},
 	}
+
+	for pos := range theSet {
+		theSet[pos].number = pos
+	}
+
+	return theSet
 }
 
 // check if some achievements are validated by the current playArea
@@ -101,6 +159,9 @@ func (g game) liveDisplayDrawAchievements(screen *ebiten.Image) {
 // display achievements screen
 func (g game) drawAchievementsScreen(screen *ebiten.Image) {
 
+	x := 20
+	y := 20
+	yStep := 20
 	for _, achievement := range g.achievements {
 		text := achievement.frenchText
 		if language == englishLanguage {
@@ -109,7 +170,8 @@ func (g game) drawAchievementsScreen(screen *ebiten.Image) {
 		if achievement.obtained {
 			text += " (Ok)"
 		}
-		ebitenutil.DebugPrintAt(screen, text, achievement.screenX, achievement.screenY)
+		ebitenutil.DebugPrintAt(screen, text, x, y)
+		y += yStep
 	}
 
 }
