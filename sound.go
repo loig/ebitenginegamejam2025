@@ -20,12 +20,14 @@ package main
 import (
 	"bytes"
 	_ "embed"
+	"io"
 	"log"
 	"math"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/audio/mp3"
+	"github.com/hajimehoshi/ebiten/v2/audio/wav"
 )
 
 //go:embed title.mp3
@@ -43,9 +45,65 @@ var themeMusicBytes []byte
 var themeMusic *audio.InfiniteLoop
 var themeMusicPlayer *audio.Player
 
+//go:embed select.wav
+var soundSelectBytes []byte
+var soundSelect []byte
+
+//go:embed mvt.wav
+var soundMvtBytes []byte
+var soundMvt []byte
+
+//go:embed drop.wav
+var soundDropBytes []byte
+var soundDrop []byte
+
+//go:embed achievement.wav
+var soundAchievementBytes []byte
+var soundAchievement []byte
+
+const (
+	soundSelectID int = iota
+	soundMvtID
+	soundDropID
+	soundAchievementID
+	numSounds
+)
+
 type SoundManager struct {
 	audioContext *audio.Context
+	NextSounds   [numSounds]bool
 	musicPlayer  *audio.Player
+}
+
+// play requested sounds
+func (s *SoundManager) PlaySounds() {
+	for sound, play := range s.NextSounds {
+		if play {
+			s.playSound(sound)
+			s.NextSounds[sound] = false
+		}
+	}
+}
+
+// play a sound
+func (s SoundManager) playSound(sound int) {
+	var soundBytes []byte
+	switch sound {
+	case soundSelectID:
+		soundBytes = soundSelect
+	case soundMvtID:
+		soundBytes = soundMvt
+	case soundDropID:
+		soundBytes = soundDrop
+	case soundAchievementID:
+		soundBytes = soundAchievement
+	}
+
+	if len(soundBytes) > 0 {
+		soundPlayer := s.audioContext.NewPlayerFromBytes(soundBytes)
+		soundPlayer.SetVolume(0.15)
+		soundPlayer.Play()
+	}
 }
 
 // loop the music
@@ -142,5 +200,41 @@ func InitAudio() (manager SoundManager) {
 		log.Panic("Audio problem:", error)
 	}
 
+	// sounds
+	sound, error := wav.DecodeWithSampleRate(manager.audioContext.SampleRate(), bytes.NewReader(soundSelectBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundSelect, error = io.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = wav.DecodeWithSampleRate(manager.audioContext.SampleRate(), bytes.NewReader(soundMvtBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundMvt, error = io.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = wav.DecodeWithSampleRate(manager.audioContext.SampleRate(), bytes.NewReader(soundDropBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundDrop, error = io.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+
+	sound, error = wav.DecodeWithSampleRate(manager.audioContext.SampleRate(), bytes.NewReader(soundAchievementBytes))
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
+	soundAchievement, error = io.ReadAll(sound)
+	if error != nil {
+		log.Panic("Audio problem:", error)
+	}
 	return
 }

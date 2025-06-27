@@ -94,7 +94,7 @@ func resetTitle() {
 	for buttonPosition := range titleButtons {
 		titleButtons[buttonPosition].hover = false
 	}
-	generateCharacters()
+	generateCharacters(contentDemonstration)
 }
 
 // check button selection
@@ -102,6 +102,9 @@ func (g *game) updateTitle(mouseX, mouseY int) {
 	for buttonPosition, button := range titleButtons {
 		if mouseX >= button.x && mouseX < button.x+button.width &&
 			mouseY >= button.y && mouseY < button.y+button.height {
+			if !titleButtons[buttonPosition].hover {
+				g.SoundManager.NextSounds[soundMvtID] = true
+			}
 			titleButtons[buttonPosition].hover = true
 			if inputSelect() {
 				button.effect(g)
@@ -113,7 +116,7 @@ func (g *game) updateTitle(mouseX, mouseY int) {
 }
 
 // generate the characters for display
-func generateCharacters() {
+func generateCharacters(content tileContent) {
 	scaleFactor := 4
 	lineNum := 0
 	characterPosition := 0
@@ -121,6 +124,14 @@ func generateCharacters() {
 		lineNum++
 		for x := (lineNum%2)*(globalPeopleGraphicsWidth*scaleFactor)/2 - globalPeopleGraphicsWidth*scaleFactor; x < globalWidth; x += globalPeopleGraphicsWidth * scaleFactor {
 			newCharacter := rand.IntN(globalNumPeopleGraphics)
+			switch content {
+			case contentCop:
+				newCharacter = globalNumPeopleGraphics + 2
+			case contentManyCops:
+				newCharacter = globalNumPeopleGraphics + 1
+			case contentPeople:
+				newCharacter = globalNumPeopleGraphics
+			}
 			if len(characters) <= characterPosition {
 				characters = append(characters, newCharacter)
 			} else {
@@ -131,10 +142,8 @@ func generateCharacters() {
 	}
 }
 
-func (g game) drawTitle(screen *ebiten.Image) {
-
-	// draw the demonstration
-
+// draw the characters for display
+func drawCharacters(screen *ebiten.Image, scale float32) {
 	scaleFactor := 4
 	lineNum := 0
 	characterPosition := 0
@@ -147,10 +156,17 @@ func (g game) drawTitle(screen *ebiten.Image) {
 			opt := &ebiten.DrawImageOptions{}
 			opt.GeoM.Scale(float64(scaleFactor), float64(scaleFactor))
 			opt.GeoM.Translate(float64(x), float64(y))
+			opt.ColorScale.Scale(scale, scale, scale, 1)
 			screen.DrawImage(theImage, opt)
 			characterPosition++
 		}
 	}
+}
+
+func (g game) drawTitle(screen *ebiten.Image) {
+
+	// draw the demonstration
+	drawCharacters(screen, 1)
 
 	// draw the title
 	opt := &ebiten.DrawImageOptions{}

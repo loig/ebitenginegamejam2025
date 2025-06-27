@@ -57,12 +57,15 @@ func drawSmallTextAt(theText string, x, y float64, screen *ebiten.Image) {
 	text.Draw(screen, theText, workSansSmallFace, op)
 }
 
-func drawSmallTextCenteredAt(theText string, x, y float64, screen *ebiten.Image) {
+func drawSmallTextCenteredAt(theText string, x, y float64, screen *ebiten.Image) (height float64) {
 	op := &text.DrawOptions{}
 	op.GeoM.Translate(x, y)
 	op.LineSpacing = workSansSmallFace.Size * 1.5
 	op.PrimaryAlign = text.AlignCenter
 	text.Draw(screen, theText, workSansSmallFace, op)
+
+	_, height = text.Measure(theText, workSansSmallFace, workSansFace.Size*1.5)
+	return
 }
 
 func drawTextAt(theText string, x, y float64, screen *ebiten.Image) (height float64) {

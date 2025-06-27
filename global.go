@@ -68,11 +68,10 @@ const (
 	// end screen characteristics
 	globalEndDisplayAchievementTime = 120
 	globalEndDisplayAchievementX    = (globalWidth - globalAchievementWidth) / 2
-	globalEndDisplayAchievementY    = globalHeight / 2
-	globalEndScoreX                 = globalWidth/2 - 100
-	globalEndScoreY                 = 40
-	globalEndMaxScoreX              = globalWidth/2 - 100
-	globalEndMaxScoreY              = 60
+	globalEndDisplayAchievementY    = globalHeight - globalAchievementHeight - 10
+	globalEndScoreX                 = globalWidth / 2
+	globalEndMaxScoreX              = globalEndScoreX
+	globalEndGoalY                  = 50
 	// intro characteristics
 	globalIntroY    = 100.0
 	globalIntroSep  = 50.0

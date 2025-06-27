@@ -27,6 +27,7 @@ type game struct {
 	newAchievementPositions []int
 	endFrames               int
 	endAchievementPosition  int
+	endGoalReached          goal
 	titleChoice             gameState
 	SoundManager            SoundManager
 }
@@ -41,5 +42,6 @@ const (
 	stateCredits
 	stateHowTo
 	statePlay
+	stateEndPlay
 	stateEnd
 )

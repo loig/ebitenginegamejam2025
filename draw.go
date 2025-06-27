@@ -37,7 +37,9 @@ func (g *game) Draw(screen *ebiten.Image) {
 	case stateAchievements:
 		g.drawAchievementsScreen(screen)
 	case statePlay:
-		g.drawPlay(screen)
+		g.drawPlay(false, screen)
+	case stateEndPlay:
+		g.drawPlay(true, screen)
 	case stateEnd:
 		g.drawEnd(screen)
 	}
@@ -46,7 +48,7 @@ func (g *game) Draw(screen *ebiten.Image) {
 
 }
 
-func (g game) drawPlay(screen *ebiten.Image) {
+func (g game) drawPlay(finished bool, screen *ebiten.Image) {
 
 	// Draw the background
 	opt := &ebiten.DrawImageOptions{}
@@ -81,8 +83,19 @@ func (g game) drawPlay(screen *ebiten.Image) {
 	}
 
 	// Draw the score
-	g.score.drawCurrentAt(screen, globalPlayScoreX, globalPlayScoreY)
+	g.score.drawCurrentAt(screen, globalPlayScoreX, globalPlayScoreY, false)
 
-	// Draw the time
-	g.timeHandler.draw(screen)
+	if !finished {
+		// Draw the time
+		screen.DrawImage(bonusImage, opt)
+		g.timeHandler.draw(screen)
+	} else {
+		// Draw end game message
+		text := "C'est fini, clique pour voir les résultats"
+		if language == englishLanguage {
+			text = "End of the game, click to see the results"
+		}
+		x := globalWidth / 2
+		drawTextCenteredAt(text, float64(x), float64(globalTimeY), screen)
+	}
 }

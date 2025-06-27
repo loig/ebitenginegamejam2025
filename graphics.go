@@ -79,6 +79,10 @@ var achievementnokImage *ebiten.Image
 var achievementsmallBytes []byte
 var achievementsmallImage *ebiten.Image
 
+//go:embed bonus.png
+var bonusBytes []byte
+var bonusImage *ebiten.Image
+
 func loadGraphics() {
 	decoded, _, err := image.Decode(bytes.NewReader(backgroundBytes))
 	if err != nil {
@@ -157,4 +161,10 @@ func loadGraphics() {
 		log.Fatal(err)
 	}
 	achievementsmallImage = ebiten.NewImageFromImage(decoded)
+
+	decoded, _, err = image.Decode(bytes.NewReader(bonusBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	bonusImage = ebiten.NewImageFromImage(decoded)
 }

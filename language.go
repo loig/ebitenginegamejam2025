@@ -30,14 +30,16 @@ const (
 	englishLanguage
 )
 
-func languageSelectUpdate(mouseX int) (finished bool) {
+func languageSelectUpdate(mouseX int) (finished, changed bool) {
+
+	oldLanguage := language
 
 	language = frenchLanguage
 	if mouseX >= globalWidth/2 {
 		language = englishLanguage
 	}
 
-	return inputSelect()
+	return inputSelect(), oldLanguage != language
 }
 
 func languageSelectDraw(screen *ebiten.Image) {

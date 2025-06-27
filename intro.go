@@ -18,8 +18,6 @@
 package main
 
 import (
-	"image"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -53,6 +51,7 @@ func (i *intro) reset() {
 	case englishLanguage:
 		i.content = englishIntroContent
 	}
+	generateCharacters(contentPeople)
 }
 
 // update the intro
@@ -74,21 +73,24 @@ func (i *intro) update() (finished bool) {
 // draw the intro
 func (i intro) draw(screen *ebiten.Image) {
 
-	theImage := peopleImage.SubImage(image.Rect(
-		globalNumPeopleGraphics*globalPeopleGraphicsWidth, 0,
-		(globalNumPeopleGraphics+1)*globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image)
-	scaleFactor := 4
-	lineNum := 0
-	for y := -globalPeopleGraphicsHeight * scaleFactor; y < globalHeight; y += (globalPeopleGraphicsHeight * scaleFactor) / 4 {
-		lineNum++
-		for x := (lineNum%2)*(globalPeopleGraphicsWidth*scaleFactor)/2 - globalPeopleGraphicsWidth*scaleFactor; x < globalWidth; x += globalPeopleGraphicsWidth * scaleFactor {
-			opt := &ebiten.DrawImageOptions{}
-			opt.GeoM.Scale(float64(scaleFactor), float64(scaleFactor))
-			opt.GeoM.Translate(float64(x), float64(y))
-			opt.ColorScale.Scale(0.3, 0.2, 0.2, 1)
-			screen.DrawImage(theImage, opt)
+	/*
+		theImage := peopleImage.SubImage(image.Rect(
+			globalNumPeopleGraphics*globalPeopleGraphicsWidth, 0,
+			(globalNumPeopleGraphics+1)*globalPeopleGraphicsWidth, globalPeopleGraphicsHeight)).(*ebiten.Image)
+		scaleFactor := 4
+		lineNum := 0
+		for y := -globalPeopleGraphicsHeight * scaleFactor; y < globalHeight; y += (globalPeopleGraphicsHeight * scaleFactor) / 4 {
+			lineNum++
+			for x := (lineNum%2)*(globalPeopleGraphicsWidth*scaleFactor)/2 - globalPeopleGraphicsWidth*scaleFactor; x < globalWidth; x += globalPeopleGraphicsWidth * scaleFactor {
+				opt := &ebiten.DrawImageOptions{}
+				opt.GeoM.Scale(float64(scaleFactor), float64(scaleFactor))
+				opt.GeoM.Translate(float64(x), float64(y))
+				opt.ColorScale.Scale(0.3, 0.2, 0.2, 1)
+				screen.DrawImage(theImage, opt)
+			}
 		}
-	}
+	*/
+	drawCharacters(screen, 0.3)
 
 	position := i.position
 	if position >= len(i.content) {

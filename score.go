@@ -21,7 +21,6 @@ import (
 	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type score struct {
@@ -73,7 +72,7 @@ func (s *score) setMax() {
 }
 
 // draw the score
-func (s score) drawCurrentAt(screen *ebiten.Image, scoreX, scoreY int) {
+func (s score) drawCurrentAt(screen *ebiten.Image, scoreX, scoreY int, center bool) {
 	prefix := "Score :"
 	if language == englishLanguage {
 		prefix = "Score:"
@@ -82,12 +81,22 @@ func (s score) drawCurrentAt(screen *ebiten.Image, scoreX, scoreY int) {
 	if s.current < 0 {
 		theScore = fmt.Sprintf("%s 0 (%d)", prefix, s.current)
 	}
-	drawTextAt(theScore, float64(scoreX), float64(scoreY), screen)
+	if !center {
+		drawTextAt(theScore, float64(scoreX), float64(scoreY), screen)
+	} else {
+		drawTextCenteredAt(theScore, float64(scoreX), float64(scoreY), screen)
+	}
 }
 
 func (s score) drawMaxAt(screen *ebiten.Image, scoreX, scoreY int) {
-	theScore := fmt.Sprintf("Max: %d", s.max)
-	ebitenutil.DebugPrintAt(screen, theScore, scoreX, scoreY)
+
+	prefix := "Meilleur score :"
+	if language == englishLanguage {
+		prefix = "Best score:"
+	}
+	theScore := fmt.Sprintf("%s %d", prefix, s.max)
+	drawTextCenteredAt(theScore, float64(scoreX), float64(scoreY), screen)
+
 }
 
 // get demonstration points from the size of the demonstration
