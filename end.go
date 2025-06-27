@@ -21,7 +21,6 @@ import (
 	"sort"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 func (g *game) setupEnd() {
@@ -52,10 +51,6 @@ func (g game) drawEnd(screen *ebiten.Image) {
 
 	// display the new achievements
 	if len(g.newAchievementPositions) > 0 {
-		achievementText := g.achievements[g.newAchievementPositions[g.endAchievementPosition]].frenchText
-		if language == englishLanguage {
-			achievementText = g.achievements[g.newAchievementPositions[g.endAchievementPosition]].englishText
-		}
-		ebitenutil.DebugPrintAt(screen, achievementText, globalEndDisplayAchievementX, globalEndDisplayAchievementY)
+		g.achievements[g.newAchievementPositions[g.endAchievementPosition]].draw(globalEndDisplayAchievementX, globalEndDisplayAchievementY, screen)
 	}
 }

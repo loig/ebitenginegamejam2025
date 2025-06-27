@@ -67,6 +67,18 @@ var titleImage *ebiten.Image
 var buttonbackBytes []byte
 var buttonbackImage *ebiten.Image
 
+//go:embed achievementok.png
+var achievementokBytes []byte
+var achievementokImage *ebiten.Image
+
+//go:embed achievementnok.png
+var achievementnokBytes []byte
+var achievementnokImage *ebiten.Image
+
+//go:embed achievementsmall.png
+var achievementsmallBytes []byte
+var achievementsmallImage *ebiten.Image
+
 func loadGraphics() {
 	decoded, _, err := image.Decode(bytes.NewReader(backgroundBytes))
 	if err != nil {
@@ -127,4 +139,22 @@ func loadGraphics() {
 		log.Fatal(err)
 	}
 	buttonbackImage = ebiten.NewImageFromImage(decoded)
+
+	decoded, _, err = image.Decode(bytes.NewReader(achievementokBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	achievementokImage = ebiten.NewImageFromImage(decoded)
+
+	decoded, _, err = image.Decode(bytes.NewReader(achievementnokBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	achievementnokImage = ebiten.NewImageFromImage(decoded)
+
+	decoded, _, err = image.Decode(bytes.NewReader(achievementsmallBytes))
+	if err != nil {
+		log.Fatal(err)
+	}
+	achievementsmallImage = ebiten.NewImageFromImage(decoded)
 }

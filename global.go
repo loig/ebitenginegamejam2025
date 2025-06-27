@@ -50,11 +50,14 @@ const (
 	globalTimeWidth   = 567
 	globalTimeBarX    = 200
 	// achievements characteristics
-	globalLiveDisplayTimeAchievement  = 120
-	globalLiveDisplayAchievementsX    = globalHandX
-	globalLiveDisplayAchievementsY    = globalHeight - 20
-	globalLiveDisplayAchievementsSize = 20
-	globalLiveDisplayAchievementsSep  = 10
+	globalLiveDisplayTimeAchievement    = 180
+	globalLiveDisplayAchievementsWidth  = 252
+	globalLiveDisplayAchievementsHeight = 32
+	globalLiveDisplayAchievementsSep    = 5
+	globalLiveDisplayAchievementsX      = globalWidth - globalLiveDisplayAchievementsWidth - globalLiveDisplayAchievementsSep
+	globalLiveDisplayAchievementsY      = globalHeight - globalLiveDisplayAchievementsHeight - globalLiveDisplayAchievementsSep
+	globalAchievementWidth              = 771
+	globalAchievementHeight             = 63
 	// title screen characteristics
 	globalTitleMaxScoreX    = 20
 	globalTitleMaxScoreY    = globalHeight - 20
@@ -64,7 +67,7 @@ const (
 	globalTitleButtonHeight = 50
 	// end screen characteristics
 	globalEndDisplayAchievementTime = 120
-	globalEndDisplayAchievementX    = globalWidth/2 - 100
+	globalEndDisplayAchievementX    = (globalWidth - globalAchievementWidth) / 2
 	globalEndDisplayAchievementY    = globalHeight / 2
 	globalEndScoreX                 = globalWidth/2 - 100
 	globalEndScoreY                 = 40

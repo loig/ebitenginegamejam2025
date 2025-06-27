@@ -23,8 +23,6 @@ import (
 
 func (g *game) Draw(screen *ebiten.Image) {
 
-	g.liveDisplayDrawAchievements(screen)
-
 	switch g.state {
 	case stateLanguageSelect:
 		languageSelectDraw(screen)
@@ -43,6 +41,8 @@ func (g *game) Draw(screen *ebiten.Image) {
 	case stateEnd:
 		g.drawEnd(screen)
 	}
+
+	g.liveDisplayDrawAchievements(screen)
 
 }
 

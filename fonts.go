@@ -30,6 +30,7 @@ import (
 var workSansRegular_ttf []byte
 var workSansFaceSource *text.GoTextFaceSource
 var workSansFace *text.GoTextFace
+var workSansSmallFace *text.GoTextFace
 
 func loadFonts() {
 	s, err := text.NewGoTextFaceSource(bytes.NewReader(workSansRegular_ttf))
@@ -42,6 +43,26 @@ func loadFonts() {
 		Source: workSansFaceSource,
 		Size:   24,
 	}
+
+	workSansSmallFace = &text.GoTextFace{
+		Source: workSansFaceSource,
+		Size:   18,
+	}
+}
+
+func drawSmallTextAt(theText string, x, y float64, screen *ebiten.Image) {
+	op := &text.DrawOptions{}
+	op.GeoM.Translate(x, y)
+	op.LineSpacing = workSansSmallFace.Size * 1.5
+	text.Draw(screen, theText, workSansSmallFace, op)
+}
+
+func drawSmallTextCenteredAt(theText string, x, y float64, screen *ebiten.Image) {
+	op := &text.DrawOptions{}
+	op.GeoM.Translate(x, y)
+	op.LineSpacing = workSansSmallFace.Size * 1.5
+	op.PrimaryAlign = text.AlignCenter
+	text.Draw(screen, theText, workSansSmallFace, op)
 }
 
 func drawTextAt(theText string, x, y float64, screen *ebiten.Image) (height float64) {
