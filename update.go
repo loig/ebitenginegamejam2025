@@ -28,7 +28,11 @@ func (g *game) Update() error {
 
 	g.liveDisplayUpdateAchievements()
 
-	g.soundManager.UpdateMusic(0.5)
+	volume := 0.5
+	if g.state == statePlay || g.state == stateEndPlay {
+		volume = 0.2
+	}
+	g.soundManager.UpdateMusic(volume)
 
 	g.soundManager.PlaySounds()
 
